@@ -1,0 +1,168 @@
+.bestSellersWrapper {
+  margin-top: 60px;
+  margin-bottom: 60px;
+  background-color: #bfbfbf; /* Full grey background like image */
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.bs-sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 25px;
+}
+
+.bs-sectionTitle {
+  color: var(--white);
+  margin-bottom: 0;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.bs-timerWrapper {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.bs-timerText {
+  color: var(--white);
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.bs-mainTimer {
+  display: flex;
+  gap: 5px;
+}
+
+.bs-timerBox {
+  background: var(--alizarian);
+  color: var(--white);
+  padding: 3px 8px;
+  border-radius: 2px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.bestSellersGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px; /* Increased gap */
+  padding: 0 25px 30px 25px; /* Padding at bottom and sides */
+}
+
+.bestSellerCard {
+  background: var(--white);
+  transition: all 0.3s ease;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.bestSellerCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+.bs-imageWrapper {
+  position: relative;
+  aspect-ratio: 1.1; /* Slightly wider images */
+  background-color: #fff;
+  overflow: hidden;
+}
+
+.bestSellerImg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 0.5s ease;
+}
+
+.bestSellerCard:hover .bestSellerImg {
+  transform: scale(1.05);
+}
+
+.bs-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 5px 12px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--white);
+  text-transform: uppercase;
+  z-index: 5;
+}
+
+.bs-badge.discount { background-color: var(--alizarian); }
+.bs-badge.hot { background-color: #ffa500; }
+
+.bestSellerDetails {
+  padding: 10px 15px 10px 15px;
+}
+
+.bs-brandRating {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5.25px;
+}
+
+.bs-brandName {
+  font-size: 11px;
+  color: #888;
+}  
+
+.bs-rating {
+  font-size: 11px;
+  color: #444;
+  font-weight: 600;
+}
+
+.bs-star {
+  color: #ffa500;
+  font-size: 12px;
+}
+
+.bs-productName {
+  font-size: 13px;
+  color: #222;
+  margin-bottom: 5.25px;
+  display: block;
+  font-weight: 700;
+  line-height: 1.3;
+  overflow: hidden;
+}
+
+.bs-priceWrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.bs-oldPrice {
+  text-decoration: line-through;
+  color: #aaa;
+  font-size: 12px;
+}
+
+.bs-newPrice {
+  color: var(--alizarian);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .bestSellersGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .bestSellersGrid {
+    grid-template-columns: 1fr;
+    padding: 0 15px 20px 15px;
+  }
+}

@@ -1,0 +1,129 @@
+.promoWrapper {
+  margin-top: 40px;
+  margin-bottom: 40px;
+}
+
+.promoGrid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  grid-template-rows: repeat(2, 240px);
+  gap: 20px;
+}
+
+.promoItem {
+  position: relative;
+  border-radius: 4px;
+  overflow: hidden;
+  background-color: #f0f0f0; /* Default if image missing */
+  display: flex;
+  flex-direction: column;
+}
+
+.promoItem.furniture {
+  grid-row: span 2;
+  background-color: #e9eff2;
+}
+
+.promoItem.clocks { background-color: #f5a623; }
+.promoItem.toys { background-color: #d1d8d3; }
+.promoItem.lighting { background-color: #4a90e2; }
+.promoItem.accessories { background-color: #8b572a; }
+
+.promoContent {
+  position: absolute;
+  top: 40px;
+  left: 40px;
+  z-index: 10;
+  max-width: 80%;
+}
+
+.bannerTitle {
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+  color: var(--white) !important;
+}
+
+.bannerSubtitle {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 32px;
+  margin-bottom: 20px;
+  line-height: 1.2;
+}
+
+.furniture .bannerTitle { color: var(--funky-grey); }
+.furniture .bannerSubtitle { color: var(--white); }
+
+.small .bannerTitle { 
+  color: var(--white); 
+  margin-bottom: 5px;
+}
+.small .bannerSubtitle { 
+  color:var(--white); 
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.shopNowBtn {
+  background-color: var(--white);
+  color: var(--dark-charcoal);
+  border: 1px solid #e0e0e0;
+  padding: 12px 30px;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Inter', sans-serif;
+}
+
+.shopNowBtn:hover {
+  background-color: var(--dark-charcoal);
+  color: var(--white);
+  border-color: var(--dark-charcoal);
+}
+
+.bannerImageWrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.bannerImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.promoItem:hover .bannerImg {
+  transform: scale(1.1);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .promoGrid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+  }
+  .promoItem.furniture {
+    grid-column: span 2;
+    grid-row: span 1;
+    height: 400px;
+  }
+}
+
+@media (max-width: 768px) {
+  .promoGrid {
+    grid-template-columns: 1fr;
+  }
+  .promoItem.furniture {
+    grid-column: span 1;
+    height: 300px;
+  }
+  .promoItem {
+    height: 250px;
+  }
+}

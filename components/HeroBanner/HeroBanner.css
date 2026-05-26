@@ -1,0 +1,100 @@
+.heroCarouselWrapper .carousel-indicators {
+  bottom: 25px;
+  gap: 12px;
+}
+
+.heroCarouselWrapper .carousel-indicators [data-bs-target] {
+  width: 45px;
+  height: 4px;
+  background-color: #333;
+  border-radius: 2px;
+  opacity: 0.3;
+  border: none;
+}
+
+.heroCarouselWrapper .carousel-indicators .active {
+  opacity: 1;
+}
+
+.hero {
+  position: relative;
+  width: 100%;
+  height: 480px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.content {
+  position: relative;
+  z-index: 2;
+  padding-left: 100px;
+  max-width: 600px;
+}
+
+.saleTag {
+  font-size: 32px;
+  color: var(--black);
+  margin-bottom: 10px;
+  display: block;
+}
+
+.title {
+  margin-bottom: 10px;
+  color: var(--black);
+  line-height: 1.1;
+  text-transform: uppercase;
+  letter-spacing: -1px;
+}
+
+.divider {
+  width: 250px;
+  height: 2px;
+  background-color: #ffffff;
+  margin-bottom: 30px;
+  border-bottom: 1px solid #ccc;
+}
+
+.button {
+  background-color: #000;
+  color: #fff;
+  border: none;
+  padding: 15px 45px;
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.button:hover {
+  transform: scale(1.05);
+}
+
+.imageContainer {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 65%;
+  z-index: 1;
+}
+
+.image {
+  object-fit: contain;
+  object-position: right center;
+}
+
+@media (max-width: 992px) {
+  .content {
+    padding-left: 40px;
+    max-width: 80%;
+  }
+  .title {
+    font-size: 40px;
+  }
+  .imageContainer {
+    opacity: 0.4;
+    width: 100%;
+  }
+}
