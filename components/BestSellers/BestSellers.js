@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import './BestSellers.css';
 
 const BestSellers = () => {
@@ -68,7 +69,7 @@ const BestSellers = () => {
 
       <div className="bestSellersGrid">
         {deals.map((deal) => (
-          <div key={deal.id} className="bestSellerCard">
+          <Link key={deal.id} href={`/product/${deal.id}`} className="bestSellerCard">
             <div className="bs-imageWrapper">
               <img src={deal.image} alt={deal.name} className="bestSellerImg" />
               {deal.badge && (
@@ -89,7 +90,7 @@ const BestSellers = () => {
                 <span className="bs-newPrice Poppins-semi-bold">{deal.newPrice}</span>
               </div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </div>

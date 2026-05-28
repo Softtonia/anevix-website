@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import './Header.css';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import Image from 'next/image';
 import { 
   Search, 
@@ -28,6 +28,8 @@ import CustomDropdown from '../../utils/CustomDropdown/CustomDropdown';
 
 const Header = () => {
   const router = useRouter();
+  const pathname = usePathname();
+  const showCategoryNav = pathname === '/';
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [isLocationModalOpen, setLocationModalOpen] = useState(false);
   const [location, setLocation] = useState({});
@@ -104,6 +106,12 @@ const Header = () => {
     }
   }, []);
 
+  useEffect(() => {
+    if (!showCategoryNav) {
+      setSidebarOpen(false);
+    }
+  }, [showCategoryNav]);
+
   const navItems = [
     'Featured', 'Today Deals', 'Gift Cards', 'Offers', 
     'Buy Again', 'Sell', 'App & extension', 'Anevix Basics', 'Anevix Pay'
@@ -130,7 +138,7 @@ const Header = () => {
           <div className="topBar">
             
             <div className="logoArea">
-              <img src="logo.png" alt="Anevix"  />
+              <img src="/logo.png" alt="Anevix" />
             </div>
 
             <div className="locationArea" onClick={() => setLocationModalOpen(true)} style={{ cursor: 'pointer' }}>
@@ -236,20 +244,22 @@ const Header = () => {
         </div>
 
         {/* Secondary Nav Bar */}
-        <nav className="navBar">
-          <div className="container-fluid px-lg-5 px-3">
-            <ul className="navList">
-              <li className="navItem Poppins-regular category-navitem" onClick={() => setSidebarOpen(true)}>
-                <MenuIcon fontSize="small" /> All Categories
-              </li>
-              {navItems.map(item => (
-                <li key={item}>
-                  <a href="#" className="navItem Poppins-regular category-navitem">{item}</a>
+        {showCategoryNav && (
+          <nav className="navBar">
+            <div className="container-fluid px-lg-5 px-3">
+              <ul className="navList">
+                <li className="navItem Poppins-regular category-navitem" onClick={() => setSidebarOpen(true)}>
+                  <MenuIcon fontSize="small" /> All Categories
                 </li>
-              ))}
-            </ul>
-          </div>
-        </nav>
+                {navItems.map(item => (
+                  <li key={item}>
+                    <a href="#" className="navItem Poppins-regular category-navitem">{item}</a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </nav>
+        )}
       </header>
 
       {/* Sidebar Overlay */}

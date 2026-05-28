@@ -72,7 +72,6 @@
   --btn-accent-gradient : linear-gradient(93.15deg, #2E7D32 0%, #66BB6A 100%);
   --ternary-gradient : linear-gradient(93.15deg, #1E88E5 0%, #42A5F5 100%);
   --bg-white:#FFFFFF;
-  --bg-light : #F5F5F5;
   --funky-grey: #777777;
   --dark-charcoal:#333333;
   --alizarian:#D32F2F;
@@ -80,7 +79,8 @@
   --neon-aqua-blue : #29B6F6;
   --traditional-green : #4CAF50;
   --dark-orange : #FF8C00;
-  --black : #000000
+  --black : #000000;
+  --bayside-blue:#1E88E5
 }
 
 /* Typography Classes - Poppins */
@@ -141,6 +141,9 @@ body {
 
 .container{
   width: 1440px;
+}
+.b-none{
+  border:none !important;
 }
 
 .sub-container{

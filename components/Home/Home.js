@@ -5,7 +5,7 @@ import PromoBanners from '../PromoBanners/PromoBanners';
 import DealsOfTheWeek from '../DealsOfTheWeek/DealsOfTheWeek';
 import BestSellers from '../BestSellers/BestSellers';
 import Partners from '../Partners/Partners';
-import Newsletter from '../Newsletter/Newsletter';
+import StayUpdated from '../StayUpdated/StayUpdated';
 
 const Home = () => {
   return (
@@ -35,9 +35,9 @@ const Home = () => {
         <Partners />
       </section>
 
-      {/* Newsletter Section */}
+      {/* Stay Updated Section */}
       <section className="newsletterSection">
-        <Newsletter />
+        <StayUpdated />
       </section>
     </div>
   );

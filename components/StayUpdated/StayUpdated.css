@@ -1,0 +1,99 @@
+.stayUpdatedWrapper {
+  margin-top: 60px;
+  margin-bottom: 80px;
+}
+
+.stayUpdatedContent {
+  background-color: var(--dark-orange);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  overflow: hidden;
+  height: 338px;
+  position: relative;
+  max-width : 1200px;
+  margin:auto
+}
+
+.stayUpdatedInfo {
+  max-width: 65%;
+  color: var(--dark-charcoal);
+  z-index: 2;
+}
+
+.stayUpdatedInfo h2 {
+  margin-bottom: 20px;
+  line-height: 1.2;
+}
+
+.downloadSection {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.appButtons {
+  display: flex;
+  gap: 15px;
+}
+
+.storeBtn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  width: 100px;
+  height: 50px;
+}
+
+.storeBtn:hover {
+  transform: scale(1.05);
+}
+
+.storeBtn img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.stayUpdatedImage {
+  height: 100%;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 45%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
+.stayUpdatedImage img {
+  height: 110%;
+  object-fit: contain;
+  margin-bottom: -10px;
+}
+
+@media (max-width: 1024px) {
+  .stayUpdatedContent {
+    flex-direction: column;
+    height: auto;
+    padding: 40px;
+    text-align: center;
+  }
+  .stayUpdatedInfo {
+    max-width: 100%;
+    margin-bottom: 40px;
+  }
+  .appButtons {
+    justify-content: center;
+  }
+  .stayUpdatedImage {
+    position: relative;
+    width: 80%;
+    height: 300px;
+    margin: 0 auto;
+  }
+}
