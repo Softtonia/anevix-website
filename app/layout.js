@@ -3,6 +3,8 @@ import "./globals.css";
 import ThemeRegistry from "@/components/ThemeRegistry";
 import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer/Footer";
+import "./theme-configuration/colorVariable.css";
+import "./theme-configuration/typography.css";
 
 export const metadata = {
   title: "Anevix - Your Shopping Destination",

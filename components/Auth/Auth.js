@@ -9,8 +9,8 @@ import {
   VisibilityOutlined,
   VisibilityOffOutlined
 } from '@mui/icons-material';
-import FormElement from '@/utils/FormElement';
-import Button from '@/utils/Button';
+import FormElement from '@/utils/FormElement/FormElement';
+import Button from '@/utils/Button/Button';
 import './Auth.css';
 
 export default function Auth() {

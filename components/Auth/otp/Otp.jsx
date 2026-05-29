@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
-import Button from '@/utils/Button';
+import Button from '@/utils/Button/Button';
 import './Otp.css';
 
 const OTP_LENGTH = 6;

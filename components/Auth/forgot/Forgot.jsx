@@ -1,8 +1,8 @@
 "use client";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import FormElement from "@/utils/FormElement";
-import Button from "@/utils/Button";
+import FormElement from '@/utils/FormElement/FormElement';
+import Button from '@/utils/Button/Button';
 import "./Forgot.css";
 
 export default function Forgot() {
@@ -22,7 +22,7 @@ export default function Forgot() {
         <div className="forgot-form-section">
           <h1 className="Poppins-bold">Forgot Password</h1>
           <p className="forgot-subtitle">
-            Enter your email address and we'll send you a link to reset your
+            Enter your email address and we&#39;ll send you a link to reset your
             password.
           </p>
 

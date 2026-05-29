@@ -1,6 +1,6 @@
 import React from 'react';
 import './DealsOfTheWeek.css';
-
+import CountdownStyle1 from '@/utils/CountdownStyle1/CountdownStyle1';
 
 const DealsOfTheWeek = () => {
   const deals = [
@@ -67,30 +67,9 @@ const DealsOfTheWeek = () => {
             <div className="imageWrapper">
               <img src={deal.image} alt={deal.name} className="dealImg" />
               {deal.timer && (
-                <div className="timerOverlay">
-                  <div className="timerUnit">
-                    <span className="time">{deal.timer.days}</span>
-                    <span className="label">Days</span>
-                  </div>
-                  <div className="timerSeparator">:</div>
-                  <div className="timerUnit">
-                    <span className="time">{deal.timer.hours}</span>
-                    <span className="label">Hours</span>
-                  </div>
-                  <div className="timerSeparator">:</div>
-                  <div className="timerUnit">
-                    <span className="time">{deal.timer.mins}</span>
-                    <span className="label">Min</span>
-                  </div>
-                  <div className="timerSeparator">:</div>
-                  <div className="timerUnit">
-                    <span className="time">{deal.timer.secs}</span>
-                    <span className="label">Sec</span>
-                  </div>
-                </div>
+                <CountdownStyle1 timer={deal.timer} label="Limited Time only!" />
               )}
             </div>
-            
             <div className="dealDetails">
               <div className="topInfo">
                 <span className="brandName Poppins-regular">{deal.brand}</span>

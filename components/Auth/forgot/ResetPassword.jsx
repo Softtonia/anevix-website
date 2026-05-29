@@ -1,8 +1,8 @@
 "use client";
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import FormElement from '@/utils/FormElement';
-import Button from '@/utils/Button';
+import FormElement from '@/utils/FormElement/FormElement';
+import Button from '@/utils/Button/Button';
 import './Forgot.css';
 
 export default function ResetPassword() {

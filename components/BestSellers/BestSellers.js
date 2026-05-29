@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import './BestSellers.css';
+import CountdownStyle2 from '@/utils/CountdownStyle2/CountdownStyle2';
 
 const BestSellers = () => {
   const deals = [
@@ -56,15 +57,7 @@ const BestSellers = () => {
     <div className="container bestSellersWrapper">
       <div className="bs-sectionHeader">
         <h3 className="bs-sectionTitle Poppins-bold">Weekly Best Deals</h3>
-        <div className="bs-timerWrapper">
-          <span className="bs-timerText">Limited Time only!</span>
-          <div className="bs-mainTimer">
-            <div className="bs-timerBox">{timer.days}</div>
-            <div className="bs-timerBox">{timer.hours}</div>
-            <div className="bs-timerBox">{timer.mins}</div>
-            <div className="bs-timerBox">{timer.secs}</div>
-          </div>
-        </div>
+        <CountdownStyle2 timer={timer} label="Limited Time only!" />
       </div>
 
       <div className="bestSellersGrid">
