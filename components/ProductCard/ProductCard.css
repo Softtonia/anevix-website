@@ -1,0 +1,178 @@
+.productCard {
+  width: 100%;
+  background: #fff;
+  border: 1px solid #ececec;
+  border-radius: 10px;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.productCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+/* IMAGE */
+.productCardImageWrapper {
+  position: relative;
+  width: 100%;
+  height: 250px;
+  background: #f7f7f7;
+  overflow: hidden;
+}
+
+.productCardImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: 0.3s ease;
+}
+
+.productCard:hover .productCardImage {
+  transform: scale(1.03);
+}
+
+/* BADGE */
+.productCardBadge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #fff;
+  z-index: 2;
+}
+
+.productCardBadge.discount {
+  background: #ff4d4f;
+}
+
+.productCardBadge.hot {
+  background: #ff9800;
+}
+
+/* INFO */
+.productCardInfo {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* TOP */
+.productCardTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.productCardBrand {
+  font-size: 12px;
+  color: #8b8b8b;
+  line-height: 1;
+}
+
+.productCardRating {
+  font-size: 11px;
+  color: #ff9800;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* TITLE */
+.productCardTitle {
+  font-size: 13px;
+  line-height: 1.4;
+  font-weight: 700;
+  color: #111;
+  margin: 0;
+  text-transform: uppercase;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* PRICING */
+.productCardPricing {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.productCardOldPrice {
+  font-size: 12px;
+  color: #999;
+  text-decoration: line-through;
+}
+
+.productCardNewPrice {
+  font-size: 15px;
+  font-weight: 700;
+  color: #111;
+}
+
+/* META */
+.productCardMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2px;
+}
+
+.productCardReviews {
+  font-size: 10px;
+  color: #8d8d8d;
+}
+
+.productCardDiscount {
+  background: rgba(255, 152, 0, 0.12);
+  color: #ff9800;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 20px;
+}
+
+/* TABLET */
+@media (max-width: 1024px) {
+  .productCardImageWrapper {
+    height: 220px;
+  }
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .productCardImageWrapper {
+    height: 190px;
+  }
+
+  .productCardInfo {
+    padding: 10px;
+  }
+
+  .productCardTitle {
+    font-size: 12px;
+  }
+
+  .productCardNewPrice {
+    font-size: 14px;
+  }
+
+  .productCardBrand {
+    font-size: 11px;
+  }
+
+  .productCardReviews {
+    font-size: 9px;
+  }
+}
