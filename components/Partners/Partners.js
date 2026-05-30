@@ -24,7 +24,7 @@ const Partners = () => {
   ];
 
   return (
-    <div className="container partnersWrapper">
+    <div className="container-fluid partnersWrapper">
       <div className="partnersContent">
         <div className="partnersText">
           <h3 className="Poppins-semi-bold">Trusted by our Customers & Partners</h3>

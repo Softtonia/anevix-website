@@ -1,6 +1,74 @@
-import React from 'react';
+"use client";
+import React, { useState, useEffect } from 'react';
 import './DealsOfTheWeek.css';
-import CountdownStyle1 from '@/utils/CountdownStyle1/CountdownStyle1';
+
+const CountdownTimer = ({ initialTimer }) => {
+  const [timeLeft, setTimeLeft] = useState({
+    days: parseInt(initialTimer.days, 10),
+    hours: parseInt(initialTimer.hours, 10),
+    mins: parseInt(initialTimer.mins, 10),
+    secs: parseInt(initialTimer.secs, 10)
+  });
+
+  useEffect(() => {
+    const timerId = setInterval(() => {
+      setTimeLeft(prevTime => {
+        let { days, hours, mins, secs } = prevTime;
+
+        if (secs > 0) {
+          secs--;
+        } else {
+          secs = 59;
+          if (mins > 0) {
+            mins--;
+          } else {
+            mins = 59;
+            if (hours > 0) {
+              hours--;
+            } else {
+              hours = 23;
+              if (days > 0) {
+                days--;
+              } else {
+                clearInterval(timerId);
+                return prevTime;
+              }
+            }
+          }
+        }
+        return { days, hours, mins, secs };
+      });
+    }, 1000);
+
+    return () => clearInterval(timerId);
+  }, []);
+
+  const formatTime = (time) => time.toString().padStart(2, '0');
+
+  return (
+    <div className="timerOverlay">
+      <div className="timerUnit">
+        <span className="time">{formatTime(timeLeft.days)}</span>
+        <span className="label">Days</span>
+      </div>
+      <span className="timerSeparator">:</span>
+      <div className="timerUnit">
+        <span className="time">{formatTime(timeLeft.hours)}</span>
+        <span className="label">Hours</span>
+      </div>
+      <span className="timerSeparator">:</span>
+      <div className="timerUnit">
+        <span className="time">{formatTime(timeLeft.mins)}</span>
+        <span className="label">Min</span>
+      </div>
+      <span className="timerSeparator">:</span>
+      <div className="timerUnit">
+        <span className="time">{formatTime(timeLeft.secs)}</span>
+        <span className="label">Sec</span>
+      </div>
+    </div>
+  );
+};
 
 const DealsOfTheWeek = () => {
   const deals = [
@@ -53,7 +121,7 @@ const DealsOfTheWeek = () => {
   ];
 
   return (
-    <div className="container dealsWrapper">
+    <div className="container-fluid dealsWrapper">
       <div className="sectionHeader">
         <h6 className="sectionTitle Poppins-regular">
           <span className="accent">Deals</span> of The Week
@@ -66,9 +134,7 @@ const DealsOfTheWeek = () => {
           <div key={deal.id} className="dealCard">
             <div className="imageWrapper">
               <img src={deal.image} alt={deal.name} className="dealImg" />
-              {deal.timer && (
-                <CountdownStyle1 timer={deal.timer} label="Limited Time only!" />
-              )}
+              {deal.timer && <CountdownTimer initialTimer={deal.timer} />}
             </div>
             <div className="dealDetails">
               <div className="topInfo">

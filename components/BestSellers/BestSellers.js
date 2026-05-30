@@ -54,7 +54,7 @@ const BestSellers = () => {
   const timer = { days: '02', hours: '15', mins: '20', secs: '22' };
 
   return (
-    <div className="container bestSellersWrapper">
+    <div className="container-fluid bestSellersWrapper">
       <div className="bs-sectionHeader">
         <h3 className="bs-sectionTitle Poppins-bold">Weekly Best Deals</h3>
         <CountdownStyle2 timer={timer} label="Limited Time only!" />

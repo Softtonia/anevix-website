@@ -43,7 +43,7 @@ const PromoBanners = () => {
   ];
 
   return (
-    <div className="container promoWrapper">
+    <div className="container-fluid promoWrapper">
       <div className="promoGrid">
         {banners.map((banner) => (
           <div key={banner.id} className={`promoItem ${banner.id} ${banner.type}`}>
