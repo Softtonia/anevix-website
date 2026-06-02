@@ -32,7 +32,7 @@
 .productImage {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
 }
 
 /* =========================
@@ -52,11 +52,11 @@
 }
 
 .productBadge.discount {
-  background: #ff3b30;
+  background: var(--vermillion);
 }
 
 .productBadge.hot {
-  background: #ff9800;
+  background: var(--dark-orange);
 }
 
 /* =========================
@@ -145,7 +145,7 @@ margin-right:4px
 
 .discountTag {
   background: #fff2df;
-  color: #ff9800;
+  color: var(--dark-orange);
   padding: 6px 12px;
   border-radius: 999px;
   font-size: 11px;
@@ -171,7 +171,7 @@ margin-right:4px
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
 
   .productImageWrapper {
     height: 220px;
@@ -179,13 +179,14 @@ margin-right:4px
 
   .productContent {
     padding: 12px;
+    gap: 6px;
   }
 
   .productTitle {
-    font-size: 15px;
+    font-size: 13px !important;
   }
 
   .newPrice {
-    font-size: 20px;
+    font-size: 13px !important;
   }
 }

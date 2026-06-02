@@ -90,7 +90,7 @@ small { font-size: 14px; font-weight: 400 !important; }
 @media (max-width: 1024px) {
   h1 { font-size: 32px !important; }
   h2 { font-size: 28px !important; }
-  h3 { font-size: 24px !important; font-weight: 500 !important; }
+  h3 { font-size: 13px !important; font-weight: 500 !important; }
   h4 { font-size: 20px !important; font-weight: 500 !important; }
   h5 { font-size: 18px !important; font-weight: 500 !important; }
   h6 { font-size: 16px !important; }

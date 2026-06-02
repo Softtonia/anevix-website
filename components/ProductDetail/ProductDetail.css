@@ -168,7 +168,7 @@
 }
 
 .smallStar{
-  color:var(--orange);
+  color:var(--dark-orange);
   font-size:12px;
 }
 
@@ -522,7 +522,7 @@
   }
 
   .mainImage{
-    height:auto;
+    height:458px;
   }
 
   .rightSection h1{
@@ -537,3 +537,5 @@
     overflow-x:auto;
   }
 }
+
+

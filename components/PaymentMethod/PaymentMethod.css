@@ -1,0 +1,253 @@
+.paymentWrap {
+  padding: 32px 20px 120px;
+  background: var(--white);
+  min-height: 100vh;
+}
+
+.paymentHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.paymentHeader h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+}
+.backBtn {
+  background: transparent;
+  border: 0;
+  font-size: 22px;
+  cursor: pointer;
+  padding: 6px 10px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  color: var(--dark-charcoal);
+}
+.backBtn:hover {
+  opacity: 0.7;
+}
+
+.paymentLayout {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+.paymentForm {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+
+.totalAmount {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background: var(--bg-light);
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 16px;
+}
+.totalAmount .amount {
+  color: var(--dark-charcoal);
+}
+
+.paymentMethods {
+  background: var(--white);
+  border: 1px solid var(--bg-light);
+  padding: 20px;
+  border-radius: 6px;
+}
+.sectionLabel {
+  margin: 0 0 16px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--funky-grey);
+  letter-spacing: 0.1em;
+}
+
+.methodsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.methodCard {
+  border: 1px solid var(--bg-light);
+  border-bottom: 0;
+  overflow: hidden;
+}
+.methodCard:last-child {
+  border-bottom: 1px solid var(--bg-light);
+}
+
+.methodHeader {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  background: var(--white);
+  border: 0;
+  cursor: pointer;
+  transition: background 200ms ease;
+}
+.methodHeader:hover {
+  background: var(--bg-light);
+}
+.methodHeader.active {
+  background: rgba(255, 140, 0, 0.05);
+  border: 1px solid var(--dark-orange);
+  border-bottom: 0;
+}
+
+.methodLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  text-align: left;
+}
+.radioInput {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: var(--dark-orange);
+}
+.methodIcon {
+  font-size: 24px;
+}
+.methodInfo {
+  flex: 1;
+}
+.methodName {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--dark-charcoal);
+}
+.methodDesc {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--funky-grey);
+}
+
+.expandIcon {
+  font-size: 16px;
+  color: var(--funky-grey);
+  transition: transform 200ms ease;
+}
+.expandIcon.open {
+  transform: rotate(-180deg);
+}
+
+.methodOptions {
+  background: var(--bg-light);
+  padding: 16px 16px 16px 52px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border-top: 1px solid var(--funky-grey);
+}
+.optionItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--dark-charcoal);
+}
+.optionItem input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--dark-orange);
+}
+
+.giftCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: var(--white);
+  border: 1px solid var(--bg-light);
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 600;
+}
+.giftIcon {
+  font-size: 20px;
+}
+.applyLink {
+  margin-left: auto;
+  color: var(--dark-orange);
+  text-decoration: none;
+  font-weight: 700;
+  cursor: pointer;
+}
+.applyLink:hover {
+  text-decoration: underline;
+}
+
+.weAccept {
+  background: var(--white);
+  border: 1px solid var(--bg-light);
+  padding: 20px;
+  border-radius: 6px;
+}
+.weAccept h5 {
+  margin: 0 0 12px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--dark-charcoal);
+}
+.cardLogos {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.cardLogos img {
+  height: 28px;
+  width: auto;
+  object-fit: contain;
+}
+
+.placeOrderBtn {
+  width:906px;
+  background: var(--dark-orange);
+  color: var(--white);
+  padding: 16px;
+  border-radius: 8px;
+  font-weight: 700;
+  border: 0;
+  cursor: pointer;
+  font-size: 16px;
+  margin: 0 auto
+}
+.placeOrderBtn:hover {
+  filter: brightness(0.95);
+}
+
+.terms {
+  font-size: 13px;
+  color: var(--funky-grey);
+  text-align: center;
+  margin: 12px 0 0;
+}
+.terms a {
+  color: var(--dark-orange);
+  text-decoration: none;
+}
+.terms a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 992px) {
+  .paymentLayout {
+    grid-template-columns: 1fr;
+  }
+}

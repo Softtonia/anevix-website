@@ -150,18 +150,60 @@
 }
 
 /* Responsive */
-@media (max-width: 1200px) {
+@media (max-width: 1200px) and (min-width: 768px) {
   .dealsGrid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+  }
+  .dealCard {
+    border-radius: 6px;
+  }
+  .dealImg {
+    padding: 10px;
+  }
+  .dealDetails {
+    padding: 8px;
+  }
+  .productName {
+    font-size: 9px;
+    line-height: 1.2;
+    margin-bottom: 2px;
+  }
+  .brandName {
+    font-size: 8.5px;
+  }
+  .rating {
+    font-size: 9px;
+  }
+  .oldPrice, .newPrice {
+    font-size: 8.5px;
+  }
+  .priceWrapper {
+    gap: 5px;
+  }
+  .timerOverlay {
+    padding: 5px 2px;
+  }
+  .timerUnit .time {
+    font-size: 11px;
+  }
+  .timerUnit .label {
+    font-size: 7px;
+    margin-top: 1px;
+  }
+  .timerSeparator {
+    font-size: 11px;
+    padding-bottom: 4px;
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .dealsGrid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
   }
   .dealsContainer {
-    padding: 0 20px;
+    padding: 0 15px;
   }
 }
 

@@ -290,3 +290,127 @@
 .category-navitem{
   font-size: 20px;
 }
+
+/* Mobile and Tablet Styles */
+.mobileMenuBtn {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--dark-charcoal);
+  cursor: pointer;
+  padding: 0;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobileSearchArea {
+  display: none;
+}
+
+.mobileLocationBar {
+  display: none;
+}
+
+.mobileLocationIcon {
+  margin-right: 8px;
+}
+
+.mobileLocationText {
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 1024px) {
+  .mobileMenuBtn {
+    display: flex !important;
+  }
+
+  .logoArea {
+    display: none !important;
+  }
+
+  .locationArea {
+    display: none !important;
+  }
+
+  .navBar {
+    display: none !important;
+  }
+
+  .favIconCircle {
+    display: none !important;
+  }
+
+  .desktopSearchArea {
+    display: none !important;
+  }
+
+  .topBar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    padding: 12px 0 !important;
+    gap: 0;
+  }
+
+  .actionArea {
+    margin-left: auto;
+    gap: 15px;
+  }
+
+  .mobileSearchArea {
+    display: block !important;
+    background-color: #fff;
+    padding: 15px 0;
+  }
+
+  .searchArea {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    height: 54px;
+    border: 1px solid var(--funky-grey);
+    border-radius: 27px;
+    background-color: var(--white);
+    position: relative;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  }
+  
+  .searchInput {
+    font-size: 14px;
+    padding: 0 50px 0 20px;
+  }
+  
+  .searchButton {
+    width: 60px;
+    right: -2px;
+  }
+
+  .mobileLocationBar {
+    display: flex !important;
+    align-items: center;
+    width: 100%;
+    background-color: var(--dark-orange) !important;
+    color: var(--black) !important;
+    margin: 0 !important;
+    height: 48px;
+    border-radius: 0 !important;
+    cursor: pointer;
+  }
+  
+  .mobileLocationText {
+    color: var(--black) !important;
+  }
+  
+  .mobileLocationIcon, .mobileLocationArrow {
+    color: var(--black) !important;
+  }
+  
+  .drawer {
+    width: 280px;
+  }
+}

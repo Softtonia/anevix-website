@@ -13,6 +13,7 @@ import {
   Menu as MenuIcon,
   Close,
   ChevronRight,
+  ChevronLeft,
   GpsFixed,
   Check,
   Inventory2Outlined,
@@ -31,6 +32,7 @@ const Header = () => {
   const pathname = usePathname();
   const showCategoryNav = pathname === '/';
   const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [drawerType, setDrawerType] = useState('menu');
   const [isLocationModalOpen, setLocationModalOpen] = useState(false);
   const [location, setLocation] = useState({});
   const [isLoadingLocation, setIsLoadingLocation] = useState(true);
@@ -137,6 +139,10 @@ const Header = () => {
           {/* Top Bar */}
           <div className="topBar">
             
+            <button className="mobileMenuBtn" onClick={() => { setSidebarOpen(true); setDrawerType('menu'); }} style={{ display: 'none', background: 'none', border: 'none', padding: 0, outline: 'none', color: '#000' }}>
+              <MenuIcon style={{ fontSize: '32px' }} />
+            </button>
+
             <div className="logoArea">
               <img src="/logo.png" alt="Anevix" />
             </div>
@@ -158,7 +164,8 @@ const Header = () => {
               </div>
             </div>
 
-            <div className="searchArea">
+            {/* Desktop Search Area */}
+            <div className="searchArea desktopSearchArea">
               <input 
                 type="text" 
                 className="searchInput" 
@@ -171,7 +178,7 @@ const Header = () => {
 
             <div className="actionArea">
               <div className="langSelector" onClick={handleLangClick}>
-                <img src={selectedLang === 'EN' ? 'https://flagcdn.com/w20/gb.png' : 'https://flagcdn.com/w20/in.png'} alt="flag" style={{ width: 20, height: 14, objectFit: 'cover', borderRadius: '2px' }} /> {selectedLang} <KeyboardArrowDown fontSize="small" />
+                <img src={selectedLang === 'EN' ? 'https://flagcdn.com/w20/in.png' : 'https://flagcdn.com/w20/in.png'} alt="flag" style={{ width: 20, height: 14, objectFit: 'cover', borderRadius: '2px' }} /> {selectedLang} <KeyboardArrowDown fontSize="small" />
               </div>
               
               <CustomDropdown
@@ -180,14 +187,14 @@ const Header = () => {
                 onClose={handleLangClose}
               >
                 <MenuItem className={`Poppins-regular custom-menu-item ${selectedLang === 'EN' ? 'active' : ''}`} onClick={() => handleLangClose('EN')}>
-                  <img src="https://flagcdn.com/w40/gb.png" alt="English" style={{ width: 26, height: 18, objectFit: 'cover', borderRadius: '2px' }} /> English {selectedLang === 'EN' && <Check fontSize="small" sx={{ marginLeft: 'auto', color: 'var(--dark-orange)' }} />}
+                  <img src="https://flagcdn.com/w40/in.png" alt="English" style={{ width: 26, height: 18, objectFit: 'cover', borderRadius: '2px' }} /> English {selectedLang === 'EN' && <Check fontSize="small" sx={{ marginLeft: 'auto', color: 'var(--dark-orange)' }} />}
                 </MenuItem>
                 <MenuItem className={`Poppins-regular custom-menu-item ${selectedLang === 'HI' ? 'active' : ''}`} onClick={() => handleLangClose('HI')}>
                   <img src="https://flagcdn.com/w40/in.png" alt="Hindi" style={{ width: 26, height: 18, objectFit: 'cover', borderRadius: '2px' }} /> Hindi {selectedLang === 'HI' && <Check fontSize="small" sx={{ marginLeft: 'auto', color: 'var(--dark-orange)' }} />}
                 </MenuItem>
               </CustomDropdown>
 
-              <div className="iconCircle">
+              <div className="iconCircle favIconCircle">
                 <FavoriteBorder />
               </div>
 
@@ -243,12 +250,39 @@ const Header = () => {
           </div>
         </div>
 
+        {/* Mobile Search Bar (visible only on mobile/tablet) */}
+        <div className="mobileSearchArea" style={{ display: 'none' }}>
+          <div className="container-fluid px-3">
+            <div className="searchArea" style={{ width: '100%', maxWidth: '100%', margin: 0 }}>
+              <input 
+                type="text" 
+                className="searchInput" 
+                placeholder="Search for products, brands and more" 
+              />
+              <button className="searchButton">
+                <Search style={{fontSize:'32px'}} />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile Location Bar (visible only on mobile/tablet) */}
+        <div className="mobileLocationBar" onClick={() => setLocationModalOpen(true)} style={{ display: 'none' }}>
+          <div className="container-fluid px-3" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <LocationOn className="mobileLocationIcon" style={{ fontSize: '20px' }} />
+            <span className="mobileLocationText Poppins-regular">
+              {isLoadingLocation ? 'Loading location...' : `${location.name} ${location.area}`}
+            </span>
+            <KeyboardArrowDown className="mobileLocationArrow" style={{ fontSize: '20px' }} />
+          </div>
+        </div>
+
         {/* Secondary Nav Bar */}
         {showCategoryNav && (
           <nav className="navBar">
             <div className="container-fluid px-lg-5 px-3">
               <ul className="navList">
-                <li className="navItem Poppins-regular category-navitem" onClick={() => setSidebarOpen(true)}>
+                <li className="navItem Poppins-regular category-navitem" onClick={() => { setSidebarOpen(true); setDrawerType('categories'); }}>
                   <MenuIcon fontSize="small" /> All Categories
                 </li>
                 {navItems.map(item => (
@@ -272,28 +306,56 @@ const Header = () => {
       <div className={`drawer ${isSidebarOpen ? 'drawerOpen' : ''}`}>
         <div className="drawerHeader">
           <div className="drawerProfile">
+            {drawerType === 'categories' && (
+              <ChevronLeft 
+                className="drawerBackBtn" 
+                onClick={() => setDrawerType('menu')} 
+                style={{ cursor: 'pointer', marginRight: '10px', color: '#fff' }}
+              />
+            )}
             <PersonOutlined fontSize="large" />
-            <span className="Poppins-regular category-sidebar-title">Hello, Parneet</span>
+            <span className="Poppins-regular category-sidebar-title">
+              {drawerType === 'categories' ? 'All Categories' : 'Hello, Parneet'}
+            </span>
           </div>
           <Close className="drawerClose" onClick={() => setSidebarOpen(false)} />
         </div>
         
         <ul className="drawerList">
-          {categories.map((cat) => (
-            <li key={cat.name} className="drawerListItem">
-              <div className="drawerItemContent">
-                <div className="drawerIconWrapper">
-                  <img 
-                    src={`${cat.image}?v=${Date.now()}`} 
-                    alt={cat.name} 
-                    className="drawerIconImg"
-                  />
+          {drawerType === 'menu' ? (
+            <>
+              <li className="drawerListItem" onClick={() => setDrawerType('categories')}>
+                <div className="drawerItemContent">
+                  <span className="Poppins-regular">All Categories</span>
                 </div>
-                <span className="Poppins-regular">{cat.name}</span>
-              </div>
-              <ChevronRight fontSize="small" style={{ color: '#aaa' }} />
-            </li>
-          ))}
+                <ChevronRight fontSize="small" style={{ color: '#aaa' }} />
+              </li>
+              {navItems.map((item) => (
+                <li key={item} className="drawerListItem" onClick={() => setSidebarOpen(false)}>
+                  <div className="drawerItemContent">
+                    <span className="Poppins-regular">{item}</span>
+                  </div>
+                  <ChevronRight fontSize="small" style={{ color: '#aaa' }} />
+                </li>
+              ))}
+            </>
+          ) : (
+            categories.map((cat) => (
+              <li key={cat.name} className="drawerListItem" onClick={() => setSidebarOpen(false)}>
+                <div className="drawerItemContent">
+                  <div className="drawerIconWrapper">
+                    <img 
+                      src={`${cat.image}?v=${Date.now()}`} 
+                      alt={cat.name} 
+                      className="drawerIconImg"
+                    />
+                  </div>
+                  <span className="Poppins-regular">{cat.name}</span>
+                </div>
+                <ChevronRight fontSize="small" style={{ color: '#aaa' }} />
+              </li>
+            ))
+          )}
         </ul>
       </div>
       {/* Location Modal */}
@@ -361,7 +423,7 @@ const Header = () => {
                     setLocation({ name: 'Deliver to', area: val });
                     setLocationModalOpen(false);
                 }
-            }} sx={{ bgcolor: '#ff9900', color: '#000', '&:hover': { bgcolor: '#e38800' } }}>
+            }} sx={{ bgcolor: 'var(--dark-orange)', color: '#000', '&:hover': { bgcolor: 'var(--dark-orange-hover)' } }}>
                 Apply
             </Button>
           </Box>

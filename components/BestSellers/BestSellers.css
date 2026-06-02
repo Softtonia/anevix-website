@@ -157,15 +157,26 @@
 }
 
 /* Responsive */
-@media (max-width: 1200px) {
+@media (max-width: 1024px) {
   .bestSellersGrid {
-    grid-template-columns: repeat(2, 1fr);
+    display: flex;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    gap: 15px;
+    padding: 0 20px 30px 20px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
   }
-}
-
-@media (max-width: 600px) {
-  .bestSellersGrid {
-    grid-template-columns: 1fr;
-    padding: 0 15px 20px 15px;
+  .bestSellersGrid::-webkit-scrollbar {
+    display: none !important; /* Safari and Chrome */
+  }
+  .bestSellerCard {
+    flex: 0 0 250px; /* Fixed width for horizontal scroll items */
+  }
+  .bs-sectionHeader {
+    padding: 15px 20px;
+  }
+  .bs-sectionTitle {
+    font-size: 20px;
   }
 }

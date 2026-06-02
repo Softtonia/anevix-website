@@ -477,62 +477,111 @@
 ========================= */
 
 @media (max-width: 1200px) {
-
   .productsGrid {
     grid-template-columns: repeat(2, 1fr);
   }
-
   .shopGrid {
     grid-template-columns: 280px 1fr;
   }
 }
 
-@media (max-width: 992px) {
+/* Tablet (iPad) Viewport: 768px to 1024px */
+@media (max-width: 1024px) and (min-width: 768px) {
+  .shopGrid {
+    grid-template-columns: 240px 1fr;
+    gap: 16px;
+  }
+  .sidebarCard {
+    padding: 16px 12px;
+  }
+  .sidebarSectionHeader h3 {
+    font-size: 20px;
+  }
+  .sectionTitle {
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+  .filterSection {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+  }
+  .filterList {
+    gap: 10px;
+  }
+  .checkboxItem, .radioItem {
+    font-size: 14px;
+  }
+  .colourChip {
+    width: 28px;
+    height: 28px;
+  }
+  .sizeGrid {
+    gap: 6px;
+  }
+  .sizeButton {
+    min-width: 44px;
+    height: 36px;
+    font-size: 12px;
+  }
+  .sortButton {
+    width: 200px;
+    height: 44px;
+    font-size: 14px;
+  }
+  .sortDropdown {
+    top: 50px;
+    width: 220px;
+  }
+  .filterSection::after {
+    margin: 0 -12px !important;
+  }
+}
 
+/* Mobile Viewport: under 768px */
+@media (max-width: 767px) {
   .shopGrid {
     grid-template-columns: 1fr;
+    gap: 20px;
   }
-
   .shopSidebar {
     order: 2;
   }
-
   .shopResults {
     order: 1;
   }
-
+  .productsGrid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
   .shopHeader {
     flex-direction: column;
     align-items: flex-start;
+    gap: 12px;
   }
-
   .shopActions {
     width: 100%;
     justify-content: space-between;
   }
-}
-
-@media (max-width: 768px) {
-
-  .productsGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .sortButton {
-    width: 100%;
-    font-size: 16px;
-  }
-
-  .sortDropdown {
-    width: 100%;
-  }
-
-  .shopActions {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
   .sortWrapper {
     width: 100%;
+  }
+  .sortButton {
+    width: 100%;
+    height: 48px;
+    font-size: 16px;
+  }
+  .sortDropdown {
+    width: 100%;
+    top: 55px;
+  }
+  .filterSection::after{
+  content: "";
+  display: block;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-bottom: 1px solid var(--funky-grey);
+  margin:0 -15px !important;
   }
 }

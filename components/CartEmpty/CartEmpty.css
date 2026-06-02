@@ -1,0 +1,66 @@
+.emptyCartPage {
+  padding: 40px 20px 0px;
+  display: flex;
+  justify-content: center;
+  background: var(--white);
+}
+
+.emptyCard {
+  width: 500px;
+  text-align: center;
+  padding: 40px;
+  border-radius: 12px;
+}
+
+.emptyImage {
+  margin-bottom: 22px;
+}
+
+.emptyTitle {
+  margin: 0 0 12px;
+  font-size: 28px;
+  color: var(--dark-charcoal);
+}
+
+.emptySubtitle {
+  margin: 0 0 20px;
+  color: var(--funky-grey);
+  font-size: 14px;
+}
+
+.emptyContinue {
+  display: block;
+  position: relative;
+  background: var(--dark-orange);
+  color: var(--white);
+  padding: 16px 28px;
+  border-radius: 8px;
+  text-decoration: none;
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.emptyContinue:hover { filter: brightness(0.95); }
+
+.emptyContinueText { display: block; text-align: center; font-size: 16px; }
+
+.emptyContinueIcon {
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+}
+
+.emptyContinueIcon svg { color: #fff; }
+
+@media (max-width: 640px) {
+  .emptyCard { padding: 32px 20px; }
+  .emptyTitle { font-size: 22px; }
+}
