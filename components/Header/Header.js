@@ -217,10 +217,10 @@ const Header = () => {
                   New Customer ? <span onClick={() => { handleAccountClose(); router.push('/signup'); }} className="Poppins-semi-bold" style={{ color: 'var(--dark-orange)', cursor: 'pointer' }}>Sign Up</span>
                 </MenuItem>
                 
-                <MenuItem className="Poppins-regular custom-menu-item" onClick={handleAccountClose}>
+                <MenuItem className="Poppins-regular custom-menu-item" onClick={() => { handleAccountClose(); router.push('/my-account'); }}>
                   <PersonOutlined fontSize="small" /> My Profile
                 </MenuItem>
-                <MenuItem className="Poppins-regular custom-menu-item" onClick={handleAccountClose}>
+                <MenuItem className="Poppins-regular custom-menu-item" onClick={() => { handleAccountClose(); router.push('/my-orders'); }}>
                   <Inventory2Outlined fontSize="small" /> Orders
                 </MenuItem>
                 <MenuItem className="Poppins-regular custom-menu-item" onClick={handleAccountClose}>

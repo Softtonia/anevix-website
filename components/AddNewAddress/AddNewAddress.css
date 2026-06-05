@@ -1,5 +1,5 @@
 .addNewAddressWrap {
-  padding: 32px 20px 120px;
+  padding: 32px 20px 30px;
   background: var(--white);
   min-height: 100vh;
 }
@@ -37,13 +37,11 @@
 }
 .cancelBtn {
   background: transparent;
-  border: 1px solid var(--funky-grey);
-  padding: 8px 12px;
+  padding: 16px 46px;
   border-radius: 8px;
   text-decoration: none;
   color: var(--dark-charcoal);
   display: inline-block;
-  font-weight: 600;
   cursor: pointer;
   transition: border-color 200ms ease;
 }
@@ -83,16 +81,7 @@
   margin-bottom: 6px;
   color: var(--dark-charcoal);
 }
-.formGroup input[type="text"],
-.formGroup input[type="tel"],
-.formGroup select {
-  width: 100%;
-  padding: 10px 10px;
-  border: 1px solid var(--funky-grey);
-  border-radius: 4px;
-  font-size: 14px;
-  box-sizing: border-box;
-}
+
 .formGroup input::placeholder {
   color: var(--funky-grey);
   font-size: 13px;

@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import Otp from '@/components/Auth/otp/Otp';
 
 export const metadata = {
@@ -21,5 +22,9 @@ export const metadata = {
 };
 
 export default function OtpPage() {
-  return <Otp />;
+  return (
+    <Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', fontFamily: 'Poppins-semibold', fontSize: '20px', color: 'var(--dark-charcoal)' }}>Loading...</div>}>
+      <Otp />
+    </Suspense>
+  );
 }

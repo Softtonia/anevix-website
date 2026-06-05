@@ -2,7 +2,9 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import OrderSummary from '@/components/OrderSummary/OrderSummary';
+import FormElement from '@/utils/FormElement/FormElement';
 import './AddNewAddress.css';
+import StayUpdated from '../StayUpdated/StayUpdated';
 
 export default function AddNewAddress() {
   const [formData, setFormData] = useState({
@@ -27,6 +29,7 @@ export default function AddNewAddress() {
   };
 
   return (
+    <>
     <div className="addNewAddressWrap">
       <div className="addNewAddressInner">
         <header className="addHeader">
@@ -44,46 +47,72 @@ export default function AddNewAddress() {
               <h4 className="sectionLabel">CONTACT DETAILS</h4>
               
               <div className="formGroup">
-                <label>COUNTRY</label>
-                <select name="country" value={formData.country} onChange={handleChange}>
-                  <option value="">Select Country</option>
-                  <option value="india">India</option>
-                  <option value="usa">USA</option>
-                </select>
+                <FormElement
+                  type="searchable-select"
+                  label="COUNTRY"
+                  name="country"
+                  value={formData.country}
+                  onChange={handleChange}
+                  placeholder="Select Country"
+                  options={[
+                    { value: 'india', label: 'India' },
+                    { value: 'usa', label: 'USA' },
+                    { value: 'uk', label: 'United Kingdom' },
+                    { value: 'canada', label: 'Canada' },
+                    { value: 'australia', label: 'Australia' },
+                    { value: 'germany', label: 'Germany' },
+                    { value: 'france', label: 'France' },
+                    { value: 'japan', label: 'Japan' },
+                  ]}
+                />
               </div>
 
               <div className="formGroup">
-                <label className="Poppins-regular">Full Name (First and Last Name)</label>
-                <div className="inputWrapper">
-                  <input
-                    type="text"
-                    name="fullName"
-                    placeholder="NAME"
-                    value={formData.fullName}
-                    onChange={handleChange}
-                  />
-                  <span className="clearBtn">✕</span>
-                </div>
+                <FormElement
+                  type="text"
+                  name="fullName"
+                  placeholder="NAME"
+                  value={formData.fullName}
+                  onChange={handleChange}
+                  label="Full Name (First and Last Name)"
+                  labelClassName="Poppins-regular"
+                  icon={formData.fullName && (
+                    <span 
+                      style={{ cursor: 'pointer', pointerEvents: 'auto' }} 
+                      onClick={() => setFormData(prev => ({ ...prev, fullName: '' }))}
+                    >
+                      ✕
+                    </span>
+                  )}
+                />
               </div>
 
               <div className="formGroup">
-                <label className="Poppins-regular">Mobile Number</label>
-                <div className="inputWrapper">
-                  <input
-                    type="tel"
-                    name="mobileNumber"
-                    placeholder="XXXXXXXXXX"
-                    value={formData.mobileNumber}
-                    onChange={handleChange}
-                  />
-                  <span className="clearBtn">✕</span>
-                </div>
+                <FormElement
+                  type="tel"
+                  name="mobileNumber"
+                  placeholder="XXXXXXXXXX"
+                  value={formData.mobileNumber}
+                  onChange={handleChange}
+                  label="Mobile Number"
+                  labelClassName="Poppins-regular"
+                  icon={formData.mobileNumber && (
+                    <span 
+                      style={{ cursor: 'pointer', pointerEvents: 'auto' }} 
+                      onClick={() => setFormData(prev => ({ ...prev, mobileNumber: '' }))}
+                    >
+                      ✕
+                    </span>
+                  )}
+                />
               </div>
 
               <div className="formGroup checkbox">
-                <label>
-                  <input type="checkbox" /> Maybe used to assist delivery
-                </label>
+                <FormElement
+                  type="checkbox"
+                  name="assistDelivery"
+                  label="Maybe used to assist delivery"
+                />
               </div>
             </section>
 
@@ -96,7 +125,7 @@ export default function AddNewAddress() {
               </div>
 
               <div className="formGroup">
-                <input
+                <FormElement
                   type="text"
                   name="houseNumber"
                   placeholder="House Number/Tower/Block*"
@@ -106,7 +135,7 @@ export default function AddNewAddress() {
               </div>
 
               <div className="formGroup">
-                <input
+                <FormElement
                   type="text"
                   name="address"
                   placeholder="Address (locality/building/street)*"
@@ -116,7 +145,7 @@ export default function AddNewAddress() {
               </div>
 
               <div className="formGroup">
-                <input
+                <FormElement
                   type="text"
                   name="pincode"
                   placeholder="Pincode"
@@ -126,7 +155,7 @@ export default function AddNewAddress() {
               </div>
 
               <div className="formGroup">
-                <input
+                <FormElement
                   type="text"
                   name="city"
                   placeholder="Town/City"
@@ -136,11 +165,23 @@ export default function AddNewAddress() {
               </div>
 
               <div className="formGroup">
-                <select name="state" value={formData.state} onChange={handleChange}>
-                  <option value="">State</option>
-                  <option value="karnataka">Karnataka</option>
-                  <option value="maharashtra">Maharashtra</option>
-                </select>
+                <FormElement
+                  type="searchable-select"
+                  name="state"
+                  value={formData.state}
+                  onChange={handleChange}
+                  placeholder="State"
+                  options={[
+                    { value: 'karnataka', label: 'Karnataka' },
+                    { value: 'maharashtra', label: 'Maharashtra' },
+                    { value: 'delhi', label: 'Delhi' },
+                    { value: 'tamilnadu', label: 'Tamil Nadu' },
+                    { value: 'telangana', label: 'Telangana' },
+                    { value: 'up', label: 'Uttar Pradesh' },
+                    { value: 'gujarat', label: 'Gujarat' },
+                    { value: 'rajasthan', label: 'Rajasthan' },
+                  ]}
+                />
               </div>
             </section>
 
@@ -149,38 +190,28 @@ export default function AddNewAddress() {
               <h4 className="sectionLabel Poppins-regular">Address Type</h4>
               
               <div className="radioGroup">
-                <label>
-                  <input
-                    type="radio"
-                    name="addressType"
-                    value="home"
-                    checked={formData.addressType === 'home'}
-                    onChange={handleChange}
-                  />
-                  <span className="Poppins-regular">Home</span>
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    name="addressType"
-                    value="office"
-                    checked={formData.addressType === 'office'}
-                    onChange={handleChange}
-                  />
-                  <span className="Poppins-regular">Office</span>
-                </label>
+                <FormElement
+                  type="radio"
+                  name="addressType"
+                  value={formData.addressType}
+                  onChange={handleChange}
+                  labelClassName="Poppins-regular"
+                  options={[
+                    { value: 'home', label: 'Home' },
+                    { value: 'office', label: 'Office' },
+                  ]}
+                />
               </div>
 
               <div className="formGroup checkbox">
-                <label className="Poppins-regular">
-                  <input
-                    type="checkbox"
-                    name="defaultAddress"
-                    checked={formData.defaultAddress}
-                    onChange={handleChange}
-                  />
-                  Make this as my default address
-                </label>
+                <FormElement
+                  type="checkbox"
+                  name="defaultAddress"
+                  checked={formData.defaultAddress}
+                  onChange={handleChange}
+                  label="Make this as my default address"
+                  labelClassName="Poppins-regular"
+                />
               </div>
             </section>
 
@@ -191,5 +222,7 @@ export default function AddNewAddress() {
         </div>
       </div>
     </div>
+    <StayUpdated/>
+    </>
   );
 }
