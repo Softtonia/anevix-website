@@ -1,0 +1,321 @@
+name: Deploy Dev React - Anevix
+
+on:
+  push:
+    branches:
+      - dev
+
+concurrency:
+  group: anevix-dev-deployment
+  cancel-in-progress: true
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  BASE_PATH: /var/www/anevix.in
+
+jobs:
+  deploy-dev:
+    name: Build & Deploy Anevix
+    runs-on: ubuntu-latest
+    environment: dev
+    if: github.ref == 'refs/heads/dev'
+
+    steps:
+      # ---------------------------------------------------------
+      # Checkout
+      # ---------------------------------------------------------
+      - name: Checkout Code
+        uses: actions/checkout@v5
+
+      # ---------------------------------------------------------
+      # Node
+      # ---------------------------------------------------------
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: '20.19.0'
+          cache: 'npm'
+
+      # ---------------------------------------------------------
+      # Dependencies
+      # ---------------------------------------------------------
+      - name: Install Dependencies
+        run: |
+          set -e
+
+          npm config set registry https://registry.npmjs.org/
+          npm config set fetch-retries 5
+          npm config set fetch-retry-mintimeout 20000
+          npm config set fetch-retry-maxtimeout 120000
+          npm config set fetch-timeout 300000
+
+          for i in 1 2 3; do
+            echo "Install attempt $i"
+
+            if [ -f package-lock.json ]; then
+              if npm ci --legacy-peer-deps --prefer-offline --no-audit --no-fund; then
+                exit 0
+              fi
+            else
+              if npm install --legacy-peer-deps --no-audit --no-fund; then
+                exit 0
+              fi
+            fi
+
+            sleep 15
+          done
+
+          echo "ERROR: Dependency installation failed"
+          exit 1
+
+      # ---------------------------------------------------------
+      # Production Environment
+      # ---------------------------------------------------------
+      - name: Create Vite Environment
+        env:
+          VITE_REACT_APP_API_URL: ${{ secrets.VITE_REACT_APP_API_URL }}
+        run: |
+          set -e
+
+          if [ -z "$VITE_REACT_APP_API_URL" ]; then
+            echo "ERROR: VITE_REACT_APP_API_URL is missing"
+            exit 1
+          fi
+
+          {
+            printf 'VITE_REACT_APP_API_URL=%s\n' "$VITE_REACT_APP_API_URL"
+          } > .env.production
+
+          cp .env.production .env
+
+      # ---------------------------------------------------------
+      # Build
+      # ---------------------------------------------------------
+      - name: Build React App
+        run: |
+          set -e
+
+          rm -rf dist build
+          npm run build
+
+      # ---------------------------------------------------------
+      # Detect build folder
+      # ---------------------------------------------------------
+      - name: Detect Build Folder
+        run: |
+          set -e
+
+          if [ -d "dist" ]; then
+            echo "BUILD_DIR=dist" >> "$GITHUB_ENV"
+
+          elif [ -d "build" ]; then
+            echo "BUILD_DIR=build" >> "$GITHUB_ENV"
+
+          else
+            echo "ERROR: dist/build directory not found"
+            exit 1
+          fi
+
+      # ---------------------------------------------------------
+      # Validate build
+      # ---------------------------------------------------------
+      - name: Validate Build
+        run: |
+          set -e
+
+          if [ ! -f "$BUILD_DIR/index.html" ]; then
+            echo "ERROR: index.html not found"
+            exit 1
+          fi
+
+          echo "Build validated successfully"
+          du -sh "$BUILD_DIR"
+
+      # ---------------------------------------------------------
+      # Archive build
+      # ---------------------------------------------------------
+      - name: Create Build Archive
+        run: |
+          set -e
+
+          tar -czf react-build.tar.gz -C "$BUILD_DIR" .
+
+          ls -lh react-build.tar.gz
+
+      # ---------------------------------------------------------
+      # SSH setup
+      # ---------------------------------------------------------
+      - name: Setup SSH
+        env:
+          DEV_SSH_KEY: ${{ secrets.DEV_SSH_KEY }}
+          DEV_HOST: ${{ secrets.DEV_HOST }}
+          DEV_PORT: ${{ secrets.DEV_PORT }}
+        run: |
+          set -e
+
+          SSH_PORT="${DEV_PORT:-22}"
+
+          echo "SSH_PORT=$SSH_PORT" >> "$GITHUB_ENV"
+
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+
+          printf '%s\n' "$DEV_SSH_KEY" > ~/.ssh/dev_key
+          chmod 600 ~/.ssh/dev_key
+
+          ssh-keyscan -p "$SSH_PORT" -H "$DEV_HOST" >> ~/.ssh/known_hosts
+
+      # ---------------------------------------------------------
+      # Prepare server
+      # ---------------------------------------------------------
+      - name: Prepare Server
+        env:
+          DEV_HOST: ${{ secrets.DEV_HOST }}
+          DEV_USER: ${{ secrets.DEV_USER }}
+        run: |
+          set -e
+
+          ssh \
+            -i ~/.ssh/dev_key \
+            -p "$SSH_PORT" \
+            "$DEV_USER@$DEV_HOST" \
+            "mkdir -p '$BASE_PATH/.deploy_tmp' '$BASE_PATH/backups'"
+
+      # ---------------------------------------------------------
+      # Upload build
+      # ---------------------------------------------------------
+      - name: Upload Build
+        env:
+          DEV_HOST: ${{ secrets.DEV_HOST }}
+          DEV_USER: ${{ secrets.DEV_USER }}
+        run: |
+          set -e
+
+          scp \
+            -i ~/.ssh/dev_key \
+            -P "$SSH_PORT" \
+            react-build.tar.gz \
+            "$DEV_USER@$DEV_HOST:$BASE_PATH/.deploy_tmp/react-build.tar.gz"
+
+      # ---------------------------------------------------------
+      # Deploy
+      # ---------------------------------------------------------
+      - name: Deploy Build
+        env:
+          DEV_HOST: ${{ secrets.DEV_HOST }}
+          DEV_USER: ${{ secrets.DEV_USER }}
+          GIT_SHA: ${{ github.sha }}
+        run: |
+          ssh \
+            -i ~/.ssh/dev_key \
+            -p "$SSH_PORT" \
+            "$DEV_USER@$DEV_HOST" \
+            "BASE_PATH='$BASE_PATH' GIT_SHA='$GIT_SHA' bash -s" <<'SERVER_SCRIPT'
+
+            set -euo pipefail
+
+            DEPLOY_PATH="$BASE_PATH/dist"
+            BACKUP_DIR="$BASE_PATH/backups"
+            TMP_DIR="$BASE_PATH/.deploy_tmp"
+            ARCHIVE="$TMP_DIR/react-build.tar.gz"
+            NEW_BUILD="$BASE_PATH/.deploy_new"
+
+            echo "Deploying Anevix..."
+            echo "Path: $BASE_PATH"
+            echo "Commit: $GIT_SHA"
+
+            # Validate archive
+            if [ ! -f "$ARCHIVE" ]; then
+              echo "ERROR: Build archive not found"
+              exit 1
+            fi
+
+            # Prepare fresh build
+            rm -rf "$NEW_BUILD"
+            mkdir -p "$NEW_BUILD"
+
+            tar -xzf "$ARCHIVE" -C "$NEW_BUILD"
+
+            # Validate before touching current website
+            if [ ! -f "$NEW_BUILD/index.html" ]; then
+              echo "ERROR: New build index.html missing"
+              rm -rf "$NEW_BUILD"
+              exit 1
+            fi
+
+            # Backup existing deployment
+            if [ -f "$DEPLOY_PATH/index.html" ]; then
+
+              BACKUP_PATH="$BACKUP_DIR/dist_backup_$(date +%Y%m%d_%H%M%S)"
+
+              mkdir -p "$BACKUP_PATH"
+
+              cp -a "$DEPLOY_PATH/." "$BACKUP_PATH/"
+
+              echo "Backup created: $BACKUP_PATH"
+            fi
+
+            # Keep latest 2 backups only
+            ls -dt "$BACKUP_DIR"/dist_backup_* 2>/dev/null \
+              | tail -n +3 \
+              | xargs -r rm -rf || true
+
+            # Deploy
+            mkdir -p "$DEPLOY_PATH"
+
+            find "$DEPLOY_PATH" \
+              -mindepth 1 \
+              -maxdepth 1 \
+              -exec rm -rf {} +
+
+            cp -a "$NEW_BUILD/." "$DEPLOY_PATH/"
+
+            # Deployment metadata
+            echo "$GIT_SHA" > "$DEPLOY_PATH/deploy-version.txt"
+            date -u +"%Y-%m-%dT%H:%M:%SZ" > "$DEPLOY_PATH/deployed-at.txt"
+
+            # Final validation
+            if [ ! -f "$DEPLOY_PATH/index.html" ]; then
+              echo "ERROR: Deployment validation failed"
+              exit 1
+            fi
+
+            # Permissions
+            chown -R deploy:www-data "$DEPLOY_PATH" 2>/dev/null || true
+            chmod -R u=rwX,g=rX,o=rX "$DEPLOY_PATH"
+
+            # Cleanup
+            rm -rf "$NEW_BUILD"
+            rm -f "$ARCHIVE"
+
+            echo "Anevix deployment completed successfully"
+
+          SERVER_SCRIPT
+
+      # ---------------------------------------------------------
+      # Health Check
+      # ---------------------------------------------------------
+      - name: Verify Website
+        run: |
+          set -e
+
+          sleep 3
+
+          HTTP_CODE=$(curl \
+            -L \
+            --retry 3 \
+            --retry-delay 3 \
+            --connect-timeout 10 \
+            -s \
+            -o /dev/null \
+            -w "%{http_code}" \
+            https://anevix.in)
+
+          echo "anevix.in HTTP Status: $HTTP_CODE"
+
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "ERROR: Deployment health check failed"
+            exit 1
+          fi
+
+          echo "Anevix deployment verified successfully ✅"
