@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import ResetPassword from '@/components/Auth/forgot/ResetPassword';
 
 export const metadata = {
@@ -21,5 +22,9 @@ export const metadata = {
 };
 
 export default function ResetPasswordPage() {
-  return <ResetPassword />;
+  return (
+    <Suspense fallback={<div style={{ minHeight: '60vh' }} />}>
+      <ResetPassword />
+    </Suspense>
+  );
 }

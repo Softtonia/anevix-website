@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import Signup from '@/components/Auth/signup/Signup';
 
 export const metadata = {
@@ -21,5 +22,9 @@ export const metadata = {
 };
 
 export default function SignupPage() {
-  return <Signup />;
+  return (
+    <Suspense fallback={<div style={{ minHeight: '60vh' }} />}>
+      <Signup />
+    </Suspense>
+  );
 }

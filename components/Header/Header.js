@@ -214,7 +214,7 @@ const Header = () => {
                 width={300}
               >
                 <MenuItem className="Poppins-regular custom-menu-item signup-header" disableRipple>
-                  New Customer ? <span onClick={() => { handleAccountClose(); router.push('/signup'); }} className="Poppins-semi-bold" style={{ color: 'var(--dark-orange)', cursor: 'pointer' }}>Sign Up</span>
+                  New Customer ? <span onClick={() => { handleAccountClose(); router.push('/signup?role=customer'); }} className="Poppins-semi-bold" style={{ color: 'var(--dark-orange)', cursor: 'pointer' }}>Sign Up</span>
                 </MenuItem>
                 
                 <MenuItem className="Poppins-regular custom-menu-item" onClick={() => { handleAccountClose(); router.push('/my-account'); }}>
@@ -226,7 +226,13 @@ const Header = () => {
                 <MenuItem className="Poppins-regular custom-menu-item" onClick={handleAccountClose}>
                   <FavoriteBorder fontSize="small" /> Wishlist
                 </MenuItem>
-                <MenuItem className="Poppins-regular custom-menu-item" onClick={handleAccountClose}>
+                <MenuItem
+                  className="Poppins-regular custom-menu-item"
+                  onClick={() => {
+                    handleAccountClose();
+                    router.push('/signup?role=business');
+                  }}
+                >
                   <StorefrontOutlined fontSize="small" /> Become a Seller
                 </MenuItem>
                 <MenuItem className="Poppins-regular custom-menu-item" onClick={handleAccountClose}>
@@ -287,7 +293,12 @@ const Header = () => {
                 </li>
                 {navItems.map(item => (
                   <li key={item}>
-                    <a href="#" className="navItem Poppins-regular category-navitem">{item}</a>
+                    <a
+                      href={item === 'Sell' ? '/signup?role=business' : '#'}
+                      className="navItem Poppins-regular category-navitem"
+                    >
+                      {item}
+                    </a>
                   </li>
                 ))}
               </ul>
@@ -331,7 +342,16 @@ const Header = () => {
                 <ChevronRight fontSize="small" style={{ color: '#aaa' }} />
               </li>
               {navItems.map((item) => (
-                <li key={item} className="drawerListItem" onClick={() => setSidebarOpen(false)}>
+                <li
+                  key={item}
+                  className="drawerListItem"
+                  onClick={() => {
+                    setSidebarOpen(false);
+                    if (item === 'Sell') {
+                      router.push('/signup?role=business');
+                    }
+                  }}
+                >
                   <div className="drawerItemContent">
                     <span className="Poppins-regular">{item}</span>
                   </div>

@@ -20,6 +20,8 @@ export default function FormElement({
   options = [],
   checked,
   className = '',
+  maxLength,
+  ...rest
 }) {
   const selectedOption = options.find((opt) => opt.value === value);
   const [inputValue, setInputValue] = useState(selectedOption ? selectedOption.label : '');
@@ -205,7 +207,9 @@ export default function FormElement({
               value={value}
               onChange={onChange}
               required={required}
+              maxLength={maxLength}
               className={error ? 'form-input form-input-error' : 'form-input'}
+              {...rest}
             />
             {icon && <span className="form-icon">{icon}</span>}
             {showPasswordToggle && onTogglePassword && (

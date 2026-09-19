@@ -3,6 +3,7 @@ import "./globals.css";
 import ThemeRegistry from "@/components/ThemeRegistry";
 import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer/Footer";
+import { Toaster } from "react-hot-toast";
 import "./theme-configuration/colorVariable.css";
 import "./theme-configuration/typography.css";
 
@@ -46,6 +47,29 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className="Inter-regular">
         <ThemeRegistry>
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              duration: 4000,
+              style: {
+                background: '#333',
+                color: '#fff',
+                fontSize: '14px',
+                borderRadius: '8px',
+                padding: '12px 16px',
+              },
+              success: {
+                style: {
+                  background: '#10b981',
+                },
+              },
+              error: {
+                style: {
+                  background: '#ef4444',
+                },
+              },
+            }}
+          />
           <div id="root">
             <Header />
             <main >
