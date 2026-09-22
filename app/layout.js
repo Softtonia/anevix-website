@@ -4,6 +4,7 @@ import ThemeRegistry from "@/components/ThemeRegistry";
 import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer/Footer";
 import { Toaster } from "react-hot-toast";
+import LayoutContent from "@/components/LayoutContent/LayoutContent";
 import "./theme-configuration/colorVariable.css";
 import "./theme-configuration/typography.css";
 
@@ -49,6 +50,11 @@ export default function RootLayout({ children }) {
         <ThemeRegistry>
           <Toaster
             position="top-right"
+            containerStyle={{
+              top: 24,
+              right: 24,
+              zIndex: 99999999,
+            }}
             toastOptions={{
               duration: 4000,
               style: {
@@ -57,26 +63,25 @@ export default function RootLayout({ children }) {
                 fontSize: '14px',
                 borderRadius: '8px',
                 padding: '12px 16px',
+                boxShadow: '0 10px 25px rgba(0, 0, 0, 0.15)',
               },
               success: {
                 style: {
                   background: '#10b981',
+                  color: '#fff',
                 },
               },
               error: {
                 style: {
                   background: '#ef4444',
+                  color: '#fff',
                 },
               },
             }}
           />
-          <div id="root">
-            <Header />
-            <main >
-              {children}
-            </main>
-            <Footer />
-          </div>
+          <LayoutContent>
+            {children}
+          </LayoutContent>
         </ThemeRegistry>
       </body>
     </html>

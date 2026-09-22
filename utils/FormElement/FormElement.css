@@ -28,7 +28,13 @@
 }
 
 .form-input.form-input-error {
-  border-color: var(--alizarian);
+  border-color: #ef4444 !important;
+  background-color: #fffafb;
+}
+
+.form-input.form-input-error:focus {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15) !important;
 }
 
 .form-icon {
@@ -75,9 +81,10 @@
 }
 
 .form-error-msg {
-  color: var(--alizarian);
+  color: #ef4444;
   font-size: 12px;
-  margin-top: 4px;
+  font-weight: 500;
+  margin-top: 5px;
   margin-left: 4px;
   display: block;
 }

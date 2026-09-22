@@ -32,6 +32,10 @@ export const API_ENDPOINTS = {
       ME: '/auth/business/me',
     },
   },
+  // Seller Endpoints
+  SELLER: {
+    ONBOARDING_STEP1: '/seller/onboarding/step1',
+  },
   // Roles
   ROLES: '/roles',
   // Users / Profile
@@ -40,6 +44,7 @@ export const API_ENDPOINTS = {
     UPDATE_PROFILE: '/user/profile',
     CHANGE_PASSWORD: '/user/change-password',
     ADDRESSES: '/user/addresses',
+    LOGOUT: '/users/logout',
   },
   // Products
   PRODUCTS: {

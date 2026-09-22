@@ -24,6 +24,8 @@ import {
   GetAppOutlined,
   LogoutOutlined
 } from '@mui/icons-material';
+import { authApi } from '@/api/services/auth.service';
+import toast from 'react-hot-toast';
 import { Dialog, DialogTitle, DialogContent, Button, TextField, Box, Typography, Skeleton, Menu, MenuItem } from '@mui/material';
 import CustomDropdown from '../../utils/CustomDropdown/CustomDropdown';
 
@@ -61,6 +63,18 @@ const Header = () => {
 
   const handleAccountClose = () => {
     setAccountAnchorEl(null);
+  };
+
+  const handleLogout = async () => {
+    setAccountAnchorEl(null);
+    try {
+      await authApi.logout();
+      toast.success('Logged out successfully');
+      router.push('/signin');
+    } catch (err) {
+      console.error(err);
+      router.push('/signin');
+    }
   };
 
   useEffect(() => {
@@ -247,7 +261,7 @@ const Header = () => {
                 <MenuItem className="Poppins-regular custom-menu-item" onClick={handleAccountClose}>
                   <GetAppOutlined fontSize="small" /> Download App
                 </MenuItem>
-                <MenuItem className="Poppins-regular custom-menu-item logout" onClick={handleAccountClose}>
+                <MenuItem className="Poppins-regular custom-menu-item logout" onClick={handleLogout}>
                   <LogoutOutlined fontSize="small" /> Logout
                 </MenuItem>
               </CustomDropdown>

@@ -166,12 +166,21 @@ export const authApi = {
 
   getRoles: () => apiClient.get(API_ENDPOINTS.ROLES),
 
-  logout: () => {
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('token');
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('user');
-      localStorage.removeItem('userRole');
+  logout: async () => {
+    try {
+      // Call backend logout endpoint (token is automatically added by apiClient request interceptor)
+      await apiClient.post(API_ENDPOINTS.USER.LOGOUT);
+    } catch (error) {
+      // In case network or token already invalid, log error and proceed to clear local state
+      console.warn('Logout API call error:', error?.message || error);
+    } finally {
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('token');
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('user');
+        localStorage.removeItem('userRole');
+      }
     }
   },
 };
+

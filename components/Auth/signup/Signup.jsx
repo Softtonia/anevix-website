@@ -49,18 +49,7 @@ export default function Signup() {
           const rolesData = res.data?.data || res.data?.roles || res.data || [];
           if (Array.isArray(rolesData)) {
             setAvailableRoles(rolesData);
-            // Default select the seller role (e.g., b2c-seller or seller) or first available
-            const defaultRole =
-              rolesData.find((r) =>
-                r.name?.toLowerCase().includes('seller') ||
-                r.slug?.toLowerCase().includes('seller') ||
-                r.roleName?.toLowerCase().includes('seller')
-              ) || rolesData[0];
-
-            if (defaultRole) {
-              const id = String(defaultRole._id || defaultRole.id || defaultRole.role_id);
-              setSelectedRoleIds([id]);
-            }
+            // Do not pre-select automatically; user will explicitly select their role(s)
           }
         } catch (err) {
           console.error('Failed to fetch roles:', err);
@@ -75,15 +64,14 @@ export default function Signup() {
     const strId = String(roleId);
     if (!selectedRoleIds.includes(strId)) {
       setSelectedRoleIds((prev) => [...prev, strId]);
+      if (errors.roles) {
+        setErrors((prev) => ({ ...prev, roles: '' }));
+      }
     }
   };
 
   const handleRemoveRole = (roleId) => {
     const strId = String(roleId);
-    if (selectedRoleIds.length <= 1) {
-      toast.error('At least one business role must be selected.');
-      return;
-    }
     setSelectedRoleIds((prev) => prev.filter((id) => id !== strId));
   };
 
@@ -150,7 +138,7 @@ export default function Signup() {
     return () => clearInterval(timer);
   }, [phoneVerification.resendTimer]);
 
-  const validateField = (name, value) => {
+  const validateField = (name, value, currentForm = form) => {
     let error = '';
     if (name === 'firstName' && !value.trim()) {
       error = 'First name is required';
@@ -177,7 +165,7 @@ export default function Signup() {
     } else if (name === 'confirmPassword') {
       if (!value) {
         error = 'Please confirm your password';
-      } else if (value !== form.password) {
+      } else if (value !== currentForm.password) {
         error = 'Passwords do not match';
       }
     } else if (name === 'agreeToTerms' && !value) {
@@ -195,7 +183,8 @@ export default function Signup() {
       val = val.replace(/\D/g, '').slice(0, 10);
     }
 
-    setForm((prev) => ({ ...prev, [name]: val }));
+    const updatedForm = { ...form, [name]: val };
+    setForm(updatedForm);
 
     // Reset verification if user changes email or phone
     if (name === 'email') {
@@ -205,7 +194,24 @@ export default function Signup() {
       setPhoneVerification({ sent: false, otp: '', verified: false, loading: false, error: '' });
     }
 
-    if (errors[name]) {
+    // Dynamic validation on typing for password and confirmPassword
+    if (name === 'password') {
+      const pwdError = validateField('password', val, updatedForm);
+      const confirmError = updatedForm.confirmPassword
+        ? validateField('confirmPassword', updatedForm.confirmPassword, updatedForm)
+        : '';
+      setErrors((prev) => ({
+        ...prev,
+        password: pwdError,
+        confirmPassword: confirmError,
+      }));
+    } else if (name === 'confirmPassword') {
+      const confirmError = validateField('confirmPassword', val, updatedForm);
+      setErrors((prev) => ({
+        ...prev,
+        confirmPassword: confirmError,
+      }));
+    } else if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: '' }));
     }
   };
@@ -396,9 +402,14 @@ export default function Signup() {
       }
     });
 
+    if (role === 'business' && selectedRoleIds.length === 0) {
+      newErrors.roles = 'Please select at least one business role.';
+    }
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-      toast.error('Please fix the errors in the form.');
+      const firstError = Object.values(newErrors)[0];
+      toast.error(firstError || 'Please fix the errors in the form.');
       return;
     }
 
@@ -442,11 +453,14 @@ export default function Signup() {
         localStorage.setItem('token', res.data.token);
         localStorage.setItem('userRole', role);
       }
+      if (res.data?.user) {
+        localStorage.setItem('user', JSON.stringify(res.data.user));
+      }
 
       if (role === 'business') {
-        router.push('/signin?role=business&registered=true');
+        router.push('/business/onboarding');
       } else {
-        router.push('/');
+        router.push('/my-account');
       }
     } catch (err) {
       const msg = err.message || 'Signup failed. Please try again.';
@@ -475,7 +489,7 @@ export default function Signup() {
           </h1>
           <p className="auth-subtitle" style={{ margin: '0 0 20px', color: '#666', fontSize: '14px' }}>
             {role === 'business'
-              ? 'Join as an Anevix B2C Seller to list and sell your products.'
+              ? 'Join as an Anevix partner or seller to grow your business.'
               : 'Sign up as a customer to explore exclusive deals and track your orders.'}
           </p>
 
@@ -539,6 +553,11 @@ export default function Signup() {
                       );
                     })}
                   </div>
+                )}
+                {errors.roles && (
+                  <span className="error-message" style={{ display: 'block', marginTop: '6px', fontSize: '12px', color: '#ff4d4f' }}>
+                    {errors.roles}
+                  </span>
                 )}
               </div>
             )}
@@ -762,8 +781,6 @@ export default function Signup() {
               </span>
             </label>
             {errors.agreeToTerms && <span className="field-error-msg">{errors.agreeToTerms}</span>}
-
-            {generalError && <div className="auth-error-alert">{generalError}</div>}
 
             <Button type="submit" variant="primary" disabled={loading}>
               {loading
