@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
+import apiClient from '@/api';
 import './DealsOfTheWeek.css';
 
 const CountdownTimer = ({ initialTimer }) => {
@@ -71,54 +72,36 @@ const CountdownTimer = ({ initialTimer }) => {
 };
 
 const DealsOfTheWeek = () => {
-  const deals = [
-    {
-      id: 1,
-      brand: 'Aeroline Pro Chair',
-      name: 'Jet Black with Amber Stitch',
-      rating: 4.8,
-      oldPrice: 'Rs 9999/-',
-      newPrice: 'Rs 7999/-',
-      image: '/assets/images/chair1.png',
-      timer: { days: '02', hours: '10', mins: '20', secs: '50' }
-    },
-    {
-      id: 2,
-      brand: 'Aeroline Pro Chair',
-      name: 'Jet Black with Amber Stitch',
-      rating: 4.8,
-      oldPrice: 'Rs 9999/-',
-      newPrice: 'Rs 7999/-',
-      image: '/assets/images/chair2.png',
-    },
-    {
-      id: 3,
-      brand: 'Aeroline Pro Chair',
-      name: 'Jet Black with Amber Stitch',
-      rating: 4.8,
-      oldPrice: 'Rs 9999/-',
-      newPrice: 'Rs 7999/-',
-      image: '/assets/images/chair3.png',
-    },
-    {
-      id: 4,
-      brand: 'Aeroline Pro Chair',
-      name: 'Jet Black with Amber Stitch',
-      rating: 4.8,
-      oldPrice: 'Rs 9999/-',
-      newPrice: 'Rs 7999/-',
-      image: '/assets/images/chair4.png',
-    },
-    {
-      id: 5,
-      brand: 'Aeroline Pro Chair',
-      name: 'Jet Black with Amber Stitch',
-      rating: 4.8,
-      oldPrice: 'Rs 9999/-',
-      newPrice: 'Rs 7999/-',
-      image: '/assets/images/chair5.png',
-    }
-  ];
+  const [deals, setDeals] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchDeals = async () => {
+      try {
+        const res = await apiClient.get('/products');
+        const products = Array.isArray(res.data) ? res.data : (res.data.data || res.data.products || []);
+        
+        const formattedDeals = products.slice(0, 5).map((p, index) => ({
+          id: p._id || p.id || index,
+          brand: p.brand || 'Anevix',
+          name: p.title || p.name || 'Featured Product',
+          rating: p.rating || 4.8,
+          oldPrice: p.mrp ? `Rs ${p.mrp}/-` : '',
+          newPrice: p.price ? `Rs ${p.price}/-` : (p.regular_price ? `Rs ${p.regular_price}/-` : ''),
+          image: (p.images && p.images[0]) || p.thumbnail || p.image || '/assets/images/chair1.png',
+          timer: index === 0 ? { days: '02', hours: '10', mins: '20', secs: '50' } : null
+        }));
+        
+        setDeals(formattedDeals);
+      } catch (err) {
+        console.error("Failed to fetch deals", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchDeals();
+  }, []);
 
   return (
     <div className="container-fluid dealsWrapper">

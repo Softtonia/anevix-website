@@ -49,9 +49,14 @@ export const API_ENDPOINTS = {
   // Products
   PRODUCTS: {
     LIST: '/products',
+    CREATE: '/products',
     DETAILS: (id) => `/products/${id}`,
+    UPDATE: (id) => `/products/${id}`,
+    DELETE: (id) => `/products/${id}`,
     CATEGORIES: '/categories',
     FEATURED: '/products/featured',
+    SCHEMA: '/products/schema',
+    SCHEMA_TYPE: (type) => `/products/schema/${type}`,
   },
   // Cart
   CART: {
@@ -67,5 +72,12 @@ export const API_ENDPOINTS = {
     LIST: '/orders',
     DETAILS: (orderId) => `/orders/${orderId}`,
     CANCEL: (orderId) => `/orders/${orderId}/cancel`,
+  },
+  // Upload Endpoints
+  UPLOAD: {
+    INIT: '/upload/init',
+    THUMBNAIL: '/upload/thumbnail',
+    BATCH: '/upload/images/batch',
+    STREAM: (uploadId) => `/upload/stream/${uploadId}`,
   },
 };
