@@ -505,3 +505,38 @@ tr:nth-child(3n) .sh-cat-icon-wrap {
 .product-count-col .value { font-size: 14px; font-weight: 500; color: #111827; }
 .view-catalog-outline-btn { background: transparent; color: #4338ca; border: 1px solid #4338ca; border-radius: 4px; padding: 6px 16px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
 .view-catalog-outline-btn:hover { background: #f5f3ff; }
+
+.catalog-mode-tabs {
+  display: flex;
+  background: #f1f5f9;
+  padding: 4px;
+  border-radius: 10px;
+  gap: 4px;
+}
+
+.catalog-tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.catalog-tab-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.catalog-tab-btn.active {
+  background: #ffffff;
+  color: #ea580c;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}

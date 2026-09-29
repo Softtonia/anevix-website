@@ -1,5 +1,6 @@
 'use client';
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import {
   CloudUploadOutlined,
   DescriptionOutlined,
@@ -16,18 +17,24 @@ import {
   VideoCameraBackOutlined,
   FileUploadOutlined,
   SearchOutlined,
+  KeyboardArrowDownOutlined,
 } from '@mui/icons-material';
+import Link from 'next/link';
 import toast from 'react-hot-toast';
 import apiClient, { productService, uploadService } from '@/api';
 import { Autocomplete, TextField } from '@mui/material';
 import dynamic from 'next/dynamic';
+import ProductVariations from '@/components/ProductVariations';
 import 'react-quill-new/dist/quill.snow.css';
 import './CatalogUpload.css';
 
 const ReactQuill = dynamic(() => import('react-quill-new'), { ssr: false });
 
-export default function CatalogUploadPage() {
-  const [activeTab, setActiveTab] = useState('single'); // 'single' | 'bulk'
+function CatalogUploadContent() {
+  const searchParams = useSearchParams();
+  const editId = searchParams.get('editId');
+  const [addMenuOpen, setAddMenuOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') === 'bulk' ? 'bulk' : 'single');
   const [sellerId, setSellerId] = useState(null);
   const [dropdownOptions, setDropdownOptions] = useState({});
 
@@ -39,7 +46,7 @@ export default function CatalogUploadPage() {
 
   // --- Single Product State ---
   const [singleProduct, setSingleProduct] = useState({
-    productType: 'simple', // 'simple' | 'variable' | 'external' | 'grouped'
+    productType: searchParams.get('type') || 'simple', // 'simple' | 'variable' | 'external' | 'grouped'
     title: '',
     sku: '',
     category: '',
@@ -85,6 +92,33 @@ export default function CatalogUploadPage() {
       }
     };
   }, []);
+
+  // Fetch product for editing
+  useEffect(() => {
+    if (editId) {
+      apiClient.get(`/products/${editId}`)
+        .then(res => {
+          const p = res.data?.data || res.data?.product || res.data;
+          if (p) {
+            setSingleProduct(prev => ({
+              ...prev,
+              ...p,
+              productType: p.productType || p.type || 'simple',
+              title: p.name || p.title || '',
+            }));
+            setSchemaFormData(prev => ({
+              ...prev,
+              ...p,
+              name: p.name || p.title || ''
+            }));
+          }
+        })
+        .catch(err => {
+          console.error("Failed to load product for editing:", err);
+          toast.error("Failed to load product for editing");
+        });
+    }
+  }, [editId]);
 
   // --- Product Types Schema API State ---
   const [productTypes, setProductTypes] = useState([
@@ -227,7 +261,9 @@ const fetchedId = response.data?.profile?.b2cProfileId || response.data?.b2cProf
   };
 
   // Fetch schema details for currently selected productType
+  const currentSchemaRequest = useRef(null);
   const fetchProductTypeSchema = async (type) => {
+    currentSchemaRequest.current = type;
     if (!type) return;
     try {
       setLoadingTypeSchema(true);
@@ -235,6 +271,7 @@ const fetchedId = response.data?.profile?.b2cProfileId || response.data?.b2cProf
       const res = await productService.getProductTypeSchema(type);
       // axios returns { data: { success: true, data: { productType, tabs, fields } } }
       const data = res?.data?.data || res?.data || res;
+      if (currentSchemaRequest.current !== type) return; // Prevent race conditions
       if (data && data.tabs && data.fields) {
         applySchema(data);
       } else {
@@ -253,6 +290,18 @@ const fetchedId = response.data?.profile?.b2cProfileId || response.data?.b2cProf
       fetchProductTypeSchema(singleProduct.productType);
     }
   }, [singleProduct.productType]);
+
+  useEffect(() => {
+    const type = searchParams.get('type');
+    if (type && type !== singleProduct.productType) {
+      setSingleProduct(prev => ({ ...prev, productType: type }));
+    }
+    const tab = searchParams.get('tab');
+    if (tab && tab !== activeTab) {
+      setActiveTab(tab);
+    }
+    setAddMenuOpen(false);
+  }, [searchParams]);
 
   useEffect(() => {
     if (!typeSchema?.fields) return;
@@ -794,12 +843,27 @@ const fetchedId = response.data?.profile?.b2cProfileId || response.data?.b2cProf
         return;
       }
 
+      // Clean up variants to only include fields mentioned in the UI
+      let cleanedVariants = schemaFormData.variants;
+      if (Array.isArray(schemaFormData.variants)) {
+        cleanedVariants = schemaFormData.variants.map(v => ({
+          attributes: v.attributes,
+          mrp_price: v.mrp_price,
+          anevix_price: v.anevix_price,
+          sale_price: v.sale_price,
+          dimensions: v.dimensions,
+          description: v.description,
+          images: v.images
+        }));
+      }
+
       // Consolidate final payload with all uploaded media URLs
       const finalPayload = {
         productType: singleProduct.productType,
         sellerId: sellerId,
         seller: sellerId,
         ...schemaFormData,
+        variants: cleanedVariants,
         thumbnail: schemaFormData.thumbnail || singleProduct.thumbnail || (singleProduct.images[0] ?? null),
         images: Array.from(new Set([
           ...(Array.isArray(schemaFormData.images) ? schemaFormData.images : []),
@@ -815,13 +879,23 @@ const fetchedId = response.data?.profile?.b2cProfileId || response.data?.b2cProf
         singleProduct.title ||
         'New Product';
       const typeLabel = (singleProduct.productType || 'simple').toUpperCase();
-      console.log('Final Product Creation Payload with uploaded media:', finalPayload);
+      console.log('Final Product Payload with uploaded media:', finalPayload);
       
-      const res = await productService.createProduct(finalPayload);
+      let res;
+      if (editId) {
+        res = await apiClient.put(`/products/${editId}`, finalPayload);
+      } else {
+        res = await productService.createProduct(finalPayload);
+      }
       
-      toast.success(
-        `Product "${productTitle}" (${typeLabel}) published successfully with ${finalPayload.images.length} images and ${finalPayload.videos.length} videos!`
-      );
+      const resMessage = res?.data?.message || res?.message;
+      if (resMessage) {
+        toast.success(resMessage);
+      } else {
+        toast.success(
+          `Product "${productTitle}" (${typeLabel}) ${editId ? 'updated' : 'published'} successfully with ${finalPayload.images.length} images and ${finalPayload.videos.length} videos!`
+        );
+      }
       
       // Optionally reset form here
     } catch (error) {
@@ -837,20 +911,30 @@ const fetchedId = response.data?.profile?.b2cProfileId || response.data?.b2cProf
       {/* Header & Mode Switcher */}
       <div className="catalog-header">
         <div>
-          <h2>Add & Manage Products</h2>
-          <p>Choose whether to add an individual product or bulk import your catalog via spreadsheet.</p>
+          <h2>{editId ? 'Edit Product' : 'Add & Manage Products'}</h2>
+          <p>{editId ? 'Modify the details of your product below.' : 'Choose whether to add an individual product or bulk import your catalog via spreadsheet.'}</p>
         </div>
 
         {/* Tab Switcher */}
-        <div className="catalog-mode-tabs">
+        <div className="catalog-mode-tabs" style={{ position: 'relative' }}>
           <button
             type="button"
             className={`catalog-tab-btn ${activeTab === 'single' ? 'active' : ''}`}
-            onClick={() => setActiveTab('single')}
+            onClick={() => setAddMenuOpen(!addMenuOpen)}
           >
             <AddBoxOutlined fontSize="small" />
-            Add Single Product
+            Add {singleProduct?.productType ? singleProduct.productType.charAt(0).toUpperCase() + singleProduct.productType.slice(1) : 'Single'} Product
+            <KeyboardArrowDownOutlined fontSize="small" style={{ marginLeft: '4px' }} />
           </button>
+          {addMenuOpen && (
+            <div style={{ position: 'absolute', top: '100%', left: 0, marginTop: '4px', background: 'white', border: '1px solid #e2e8f0', borderRadius: '8px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', zIndex: 50, minWidth: '100%', overflow: 'hidden' }}>
+              {['simple', 'variable', 'grouped', 'external'].map(type => (
+                <Link key={type} href={{ pathname: '/business/catalog-upload', query: { tab: 'single', type: type } }} style={{ display: 'block', padding: '10px 16px', fontSize: '13px', color: '#1e293b', textDecoration: 'none', borderBottom: '1px solid #f1f5f9', textTransform: 'capitalize' }}>
+                  {type} Product
+                </Link>
+              ))}
+            </div>
+          )}
           <button
             type="button"
             className={`catalog-tab-btn ${activeTab === 'bulk' ? 'active' : ''}`}
@@ -868,55 +952,6 @@ const fetchedId = response.data?.profile?.b2cProfileId || response.data?.b2cProf
           <div className="single-product-main">
             {/* Product Type Selector */}
             <div className="form-section-card product-type-card">
-              <div className="type-selector-header">
-                <div>
-                  <h3 className="section-title">Product Type</h3>
-                  <p className="section-sub" style={{ margin: 0 }}>
-                    Select the structure of the product you are adding.
-                  </p>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <select
-                    name="productType"
-                    className="product-type-select"
-                    value={singleProduct.productType}
-                    onChange={handleProductInputChange}
-                    disabled={loadingSchema}
-                  >
-                    {productTypes.map((pt) => (
-                      <option key={pt.type} value={pt.type}>
-                        {pt.name}
-                      </option>
-                    ))}
-                  </select>
-                  <button
-                    type="button"
-                    className="schema-refresh-btn"
-                    onClick={fetchProductSchema}
-                    title="Reload Product Types Schema"
-                    disabled={loadingSchema}
-                  >
-                    <RefreshOutlined fontSize="small" className={loadingSchema ? 'spin' : ''} />
-                  </button>
-                </div>
-              </div>
-
-              {/* Informative pill explaining selected type from Schema API */}
-              <div className="product-type-desc-banner">
-                {selectedTypeInfo ? (
-                  <span>
-                    <strong>{selectedTypeInfo.name}:</strong> {typeSchema?.description || selectedTypeInfo.description}
-                  </span>
-                ) : (
-                  <span>Select a product type from the list above.</span>
-                )}
-                {schemaError && (
-                  <span className="schema-status-note"> ({schemaError})</span>
-                )}
-              </div>
-
-
-
               {/* Dynamic Schema Tabs Navigation */}
               {typeSchema?.tabs && typeSchema.tabs.length > 0 && (
                 <div className="schema-nav-tabs">
@@ -979,9 +1014,16 @@ const fetchedId = response.data?.profile?.b2cProfileId || response.data?.b2cProf
                   </div>
                 )}
 
-                <div className="schema-fields-container">
-                  {typeSchema.fields
-                    .filter((field) => field.tab === activeSchemaTab)
+                {activeSchemaTab === 'attributes' || activeSchemaTab === 'variations' ? (
+                  <ProductVariations 
+                    schemaFormData={schemaFormData} 
+                    setSchemaFormData={setSchemaFormData} 
+                    forcedTab={activeSchemaTab} 
+                  />
+                ) : (
+                  <div className="schema-fields-container">
+                    {typeSchema.fields
+                      .filter((field) => field.tab === activeSchemaTab)
                     .map((field) => {
                       // Check field dependency
                       if (field.dependsOn) {
@@ -1482,7 +1524,8 @@ const fetchedId = response.data?.profile?.b2cProfileId || response.data?.b2cProf
                         </div>
                       );
                     })}
-                </div>
+                  </div>
+                )}
 
                 {/* Tab Navigation Footer inside Schema Card */}
                 {typeSchema.tabs && typeSchema.tabs.length > 1 && (
@@ -1752,101 +1795,6 @@ const fetchedId = response.data?.profile?.b2cProfileId || response.data?.b2cProf
               </div>
             )}
 
-            {/* If Variable Product: Variations Matrix */}
-            {singleProduct.productType === 'variable' && (
-              <div className="form-section-card">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                  <div>
-                    <h3 className="section-title">Product Variations & Attributes</h3>
-                    <p className="section-sub" style={{ margin: 0 }}>Configure options like size, color, SKU, pricing and inventory.</p>
-                  </div>
-                  <button
-                    type="button"
-                    className="add-variation-row-btn"
-                    onClick={handleAddVariation}
-                  >
-                    + Add Variation
-                  </button>
-                </div>
-
-                <div className="variations-table-wrapper">
-                  <table className="variations-table">
-                    <thead>
-                      <tr>
-                        <th>Attribute</th>
-                        <th>Option / Value</th>
-                        <th>Variant SKU</th>
-                        <th>Price (₹)</th>
-                        <th>Stock</th>
-                        <th>Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {singleProduct.variations.map((variant, idx) => (
-                        <tr key={idx}>
-                          <td>
-                            <input
-                              type="text"
-                              className="variant-cell-input"
-                              placeholder="e.g. Size / Color"
-                              value={variant.attributeName}
-                              onChange={(e) => handleVariationChange(idx, 'attributeName', e.target.value)}
-                            />
-                          </td>
-                          <td>
-                            <input
-                              type="text"
-                              className="variant-cell-input"
-                              placeholder="e.g. M, XL, Red"
-                              value={variant.attributeValue}
-                              onChange={(e) => handleVariationChange(idx, 'attributeValue', e.target.value)}
-                            />
-                          </td>
-                          <td>
-                            <input
-                              type="text"
-                              className="variant-cell-input"
-                              placeholder="SKU-VAR-01"
-                              value={variant.sku}
-                              onChange={(e) => handleVariationChange(idx, 'sku', e.target.value)}
-                            />
-                          </td>
-                          <td>
-                            <input
-                              type="number"
-                              className="variant-cell-input"
-                              placeholder="999"
-                              value={variant.price}
-                              onChange={(e) => handleVariationChange(idx, 'price', e.target.value)}
-                            />
-                          </td>
-                          <td>
-                            <input
-                              type="number"
-                              className="variant-cell-input"
-                              placeholder="25"
-                              value={variant.stock}
-                              onChange={(e) => handleVariationChange(idx, 'stock', e.target.value)}
-                            />
-                          </td>
-                          <td style={{ textAlign: 'center' }}>
-                            <button
-                              type="button"
-                              className="remove-var-btn"
-                              onClick={() => handleRemoveVariation(idx)}
-                              title="Delete variation"
-                            >
-                              <CloseOutlined fontSize="small" />
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
-
             {/* If Simple Product: Single Price & Stock Fields */}
             {singleProduct.productType === 'simple' && (
               <div className="form-section-card">
@@ -1907,18 +1855,20 @@ const fetchedId = response.data?.profile?.b2cProfileId || response.data?.b2cProf
             )}
               </>
             )}
-
-            <div className="form-actions">
-              <button
-                type="submit"
-                className="submit-product-btn"
-                disabled={submittingProduct}
-              >
-                {submittingProduct
-                  ? 'Saving Product...'
-                  : `Publish ${singleProduct.productType === 'variable' ? 'Variable' : singleProduct.productType === 'grouped' ? 'Grouped' : singleProduct.productType === 'external' ? 'External' : 'Simple'} Product`}
-              </button>
-            </div>
+            {/* Only show Publish button if it's the last tab (or if there are no tabs) */}
+            {(!typeSchema?.tabs || typeSchema.tabs.length === 0 || activeSchemaTab === typeSchema.tabs[typeSchema.tabs.length - 1].id) && (
+              <div className="form-actions">
+                <button
+                  type="submit"
+                  className="submit-product-btn"
+                  disabled={submittingProduct}
+                >
+                  {submittingProduct
+                    ? 'Saving Product...'
+                    : `Publish ${singleProduct.productType === 'variable' ? 'Variable' : singleProduct.productType === 'grouped' ? 'Grouped' : singleProduct.productType === 'external' ? 'External' : 'Simple'} Product`}
+                </button>
+              </div>
+            )}
           </div>
 
 
@@ -2157,5 +2107,13 @@ const fetchedId = response.data?.profile?.b2cProfileId || response.data?.b2cProf
         </div>
       )}
     </div>
+  );
+}
+
+export default function CatalogUploadPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <CatalogUploadContent />
+    </Suspense>
   );
 }

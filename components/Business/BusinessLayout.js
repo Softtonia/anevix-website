@@ -49,7 +49,7 @@ export default function BusinessLayout({ children }) {
     { label: 'Dashboard', path: '/business/dashboard', icon: <DashboardOutlined className="sidebar-nav-icon" /> },
     { label: 'Store Onboarding', path: '/business/onboarding', icon: <AssignmentTurnedInOutlined className="sidebar-nav-icon" /> },
     { label: 'My Products', path: '/business/products', icon: <Inventory2Outlined className="sidebar-nav-icon" /> },
-    { label: 'Add / Upload Products', path: '/business/catalog-upload', icon: <CloudUploadOutlined className="sidebar-nav-icon" /> },
+    { label: 'Inventory', path: '/business/inventory', icon: <AssignmentTurnedInOutlined className="sidebar-nav-icon" /> },
     { label: 'Orders & Shipments', path: '/business/orders', icon: <ShoppingCartOutlined className="sidebar-nav-icon" /> },
     { label: 'Promotions & Deals', path: '/business/promotions', icon: <LocalOfferOutlined className="sidebar-nav-icon" /> },
     { label: 'Analytics & Revenue', path: '/business/analytics', icon: <BarChartOutlined className="sidebar-nav-icon" /> },
