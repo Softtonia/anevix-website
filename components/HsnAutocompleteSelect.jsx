@@ -51,8 +51,8 @@ const HsnAutocompleteSelect = ({ value, onChange }) => {
       setLoading(true);
       setError(null);
       try {
-        const response = await axios.get(`http://localhost:5000/api/hsn-codes/search?query=${encodeURIComponent(query)}`);
-        setOptions(response.data);
+        const response = await axios.get(`https://hsn.krakelabsindia.com/api/lookup?code=${encodeURIComponent(query)}`);
+        setOptions(response.data.results || []);
         setIsOpen(true);
       } catch (err) {
         console.error('Failed to fetch HSN codes:', err);
@@ -66,9 +66,9 @@ const HsnAutocompleteSelect = ({ value, onChange }) => {
   }, [query, value]);
 
   const handleSelect = (option) => {
-    setQuery(option.hsnCode);
+    setQuery(option.hsn_sac);
     setIsOpen(false);
-    onChange(option.hsnCode);
+    onChange(option.hsn_sac);
   };
 
   const handleInputChange = (e) => {
@@ -108,9 +108,9 @@ const HsnAutocompleteSelect = ({ value, onChange }) => {
           ) : options.length === 0 && !loading ? (
             <div style={styles.noResults}>No results found.</div>
           ) : (
-            options.map((option) => (
+            options.map((option, idx) => (
               <div
-                key={option._id}
+                key={option.hsn_sac || idx}
                 style={styles.option}
                 onClick={() => handleSelect(option)}
                 onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f8fafc'; }}
@@ -118,7 +118,7 @@ const HsnAutocompleteSelect = ({ value, onChange }) => {
               >
                 <div style={styles.optionContent}>
                   <span style={styles.hsnCode}>
-                    {option.hsnCode}
+                    {option.hsn_sac}
                   </span>
                   <span style={styles.description} title={option.description}>
                     {option.description}

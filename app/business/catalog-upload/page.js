@@ -25,6 +25,7 @@ import apiClient, { productService, uploadService } from '@/api';
 import { Autocomplete, TextField } from '@mui/material';
 import dynamic from 'next/dynamic';
 import ProductVariations from '@/components/ProductVariations';
+import HsnAutocompleteSelect from '@/components/HsnAutocompleteSelect';
 import 'react-quill-new/dist/quill.snow.css';
 import './CatalogUpload.css';
 
@@ -1043,6 +1044,24 @@ const fetchedId = response.data?.profile?.b2cProfileId || response.data?.b2cProf
                       }
 
                       // Render Boolean Switch
+                      if (field.key === 'hsnCode') {
+                        return (
+                          <div key={field.key} className="form-group">
+                            <label className="form-label">
+                              {field.label} {field.required && <span className="required-star">*</span>}
+                            </label>
+                            <HsnAutocompleteSelect
+                              value={schemaFormData[field.key] ?? ''}
+                              onChange={(val) => handleSchemaFieldChange(field.key, val)}
+                            />
+                            {field.description && (
+                              <p className="field-hint-text">{field.description}</p>
+                            )}
+                          </div>
+                        );
+                      }
+
+                      // Render Boolean Switch
                       if (field.type === 'boolean') {
                         return (
                           <div key={field.key} className="form-group schema-boolean-group">
@@ -1122,14 +1141,17 @@ const fetchedId = response.data?.profile?.b2cProfileId || response.data?.b2cProf
                                   placeholder={field.placeholder || `Search ${field.label}...`}
                                   variant="outlined"
                                   size="small"
-                                  InputProps={{
-                                    ...params.InputProps,
-                                    startAdornment: (
-                                      <>
-                                        <SearchOutlined sx={{ color: '#94a3b8', ml: 1, mr: -0.5, fontSize: '20px' }} />
-                                        {params.InputProps?.startAdornment}
-                                      </>
-                                    ),
+                                  slotProps={{
+                                    ...params.slotProps,
+                                    input: {
+                                      ...params.slotProps?.input,
+                                      startAdornment: (
+                                        <>
+                                          <SearchOutlined sx={{ color: '#94a3b8', ml: 1, mr: -0.5, fontSize: '20px' }} />
+                                          {params.slotProps?.input?.startAdornment || params.InputProps?.startAdornment}
+                                        </>
+                                      ),
+                                    }
                                   }}
                                   sx={{
                                     mt: 0.5,
