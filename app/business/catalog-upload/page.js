@@ -77,8 +77,8 @@ function CatalogUploadContent() {
 
   // --- Real-time Upload Session & Stream Progress State ---
   const [activeUploadId, setActiveUploadId] = useState(null);
-  const [uploadProgress, setUploadProgress] = useState(null); // { progress: 0..100, loaded, total, status, error }
-  const [isUploadingMedia, setIsUploadingMedia] = useState(false);
+  const [uploadProgresses, setUploadProgresses] = useState({ thumbnail: null, images: null, videos: null });
+  const [uploadingStates, setUploadingStates] = useState({ thumbnail: false, images: false, videos: false });
   const sseRef = useRef(null);
   const thumbnailInputRef = useRef(null);
   const galleryImageInputRef = useRef(null);
@@ -460,7 +460,7 @@ const fetchedId = response.data?.profile?.b2cProfileId || response.data?.b2cProf
   };
 
   // --- Real-time Upload Stream SSE Listener ---
-  const startUploadStream = (uploadId) => {
+  const startUploadStream = (uploadId, fieldKey) => {
     if (!uploadId || typeof window === 'undefined') return;
     if (sseRef.current) {
       sseRef.current.close();
@@ -473,10 +473,10 @@ const fetchedId = response.data?.profile?.b2cProfileId || response.data?.b2cProf
       eventSource.addEventListener('progress', (e) => {
         try {
           const data = JSON.parse(e.data);
-          setUploadProgress(data);
+          setUploadProgresses(prev => ({ ...prev, [fieldKey]: data }));
           if (data.status === 'completed' || data.progress === 100) {
             setTimeout(() => {
-              setUploadProgress(null);
+              setUploadProgresses(prev => ({ ...prev, [fieldKey]: null }));
               eventSource.close();
             }, 1200);
           }
@@ -495,13 +495,13 @@ const fetchedId = response.data?.profile?.b2cProfileId || response.data?.b2cProf
   };
 
   // Helper to initialize session and get uploadId
-  const getOrInitUploadSession = async (fileCount = 1) => {
+  const getOrInitUploadSession = async (fileCount = 1, fieldKey) => {
     try {
       const res = await uploadService.initUpload({ totalFiles: fileCount });
       const upId = res?.data?.uploadId || res?.uploadId;
       if (upId) {
         setActiveUploadId(upId);
-        startUploadStream(upId);
+        startUploadStream(upId, fieldKey);
         return upId;
       }
     } catch (err) {
@@ -516,10 +516,11 @@ const fetchedId = response.data?.profile?.b2cProfileId || response.data?.b2cProf
     if (!file) return;
 
     try {
-      setIsUploadingMedia(true);
-      setUploadProgress({ progress: 10, status: 'uploading', text: 'Starting thumbnail upload...' });
+      const fieldKey = 'thumbnail';
+      setUploadingStates(prev => ({ ...prev, thumbnail: true }));
+      setUploadProgresses(prev => ({ ...prev, thumbnail: { progress: 10, status: 'uploading', text: 'Starting thumbnail upload...' } }));
 
-      const uploadId = await getOrInitUploadSession(1);
+      const uploadId = await getOrInitUploadSession(1, fieldKey);
       const formData = new FormData();
       formData.append('thumbnail', file);
       if (uploadId) formData.append('uploadId', uploadId);
@@ -527,12 +528,15 @@ const fetchedId = response.data?.profile?.b2cProfileId || response.data?.b2cProf
       const res = await uploadService.uploadThumbnail(formData, (progressEvent) => {
         if (progressEvent.total) {
           const pct = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-          setUploadProgress((prev) => ({
+          setUploadProgresses((prev) => ({
             ...prev,
-            progress: pct,
-            loaded: progressEvent.loaded,
-            total: progressEvent.total,
-            status: pct >= 100 ? 'processing' : 'uploading',
+            thumbnail: {
+              ...prev.thumbnail,
+              progress: pct,
+              loaded: progressEvent.loaded,
+              total: progressEvent.total,
+              status: pct >= 100 ? 'processing' : 'uploading',
+            }
           }));
         }
       });
@@ -557,7 +561,7 @@ const fetchedId = response.data?.profile?.b2cProfileId || response.data?.b2cProf
       console.error('Thumbnail upload failed:', err);
       toast.error(err?.response?.data?.message || err?.message || 'Failed to upload thumbnail');
     } finally {
-      setIsUploadingMedia(false);
+      setUploadingStates(prev => ({ ...prev, thumbnail: false }));
       if (thumbnailInputRef.current) thumbnailInputRef.current.value = '';
     }
   };
@@ -568,10 +572,11 @@ const fetchedId = response.data?.profile?.b2cProfileId || response.data?.b2cProf
     if (fileList.length === 0) return;
 
     try {
-      setIsUploadingMedia(true);
-      setUploadProgress({ progress: 10, status: 'uploading', text: `Uploading ${fileList.length} ${type}(s)...` });
+      const fieldKey = type === 'video' ? 'videos' : 'images';
+      setUploadingStates(prev => ({ ...prev, [fieldKey]: true }));
+      setUploadProgresses(prev => ({ ...prev, [fieldKey]: { progress: 10, status: 'uploading', text: `Uploading ${fileList.length} ${type}(s)...` } }));
 
-      const uploadId = await getOrInitUploadSession(fileList.length);
+      const uploadId = await getOrInitUploadSession(fileList.length, fieldKey);
       const formData = new FormData();
       if (uploadId) formData.append('uploadId', uploadId);
 
@@ -587,12 +592,15 @@ const fetchedId = response.data?.profile?.b2cProfileId || response.data?.b2cProf
       const res = await uploadService.uploadBatch(formData, (progressEvent) => {
         if (progressEvent.total) {
           const pct = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-          setUploadProgress((prev) => ({
+          setUploadProgresses((prev) => ({
             ...prev,
-            progress: pct,
-            loaded: progressEvent.loaded,
-            total: progressEvent.total,
-            status: pct >= 100 ? 'processing' : 'uploading',
+            [fieldKey]: {
+              ...prev[fieldKey],
+              progress: pct,
+              loaded: progressEvent.loaded,
+              total: progressEvent.total,
+              status: pct >= 100 ? 'processing' : 'uploading',
+            }
           }));
         }
       });
@@ -632,7 +640,8 @@ const fetchedId = response.data?.profile?.b2cProfileId || response.data?.b2cProf
       console.error('Batch media upload failed:', err);
       toast.error(err?.response?.data?.message || err?.message || 'Failed to upload media files');
     } finally {
-      setIsUploadingMedia(false);
+      const fieldKey = type === 'video' ? 'videos' : 'images';
+      setUploadingStates(prev => ({ ...prev, [fieldKey]: false }));
       if (galleryImageInputRef.current) galleryImageInputRef.current.value = '';
       if (videoInputRef.current) videoInputRef.current.value = '';
     }
@@ -1305,7 +1314,7 @@ const fetchedId = response.data?.profile?.b2cProfileId || response.data?.b2cProf
                                   <button
                                     type="button"
                                     className="media-file-btn"
-                                    disabled={isUploadingMedia}
+                                    disabled={uploadingStates[field.key]}
                                     onClick={() => {
                                       if (isVideoField) videoInputRef.current?.click();
                                       else galleryImageInputRef.current?.click();
@@ -1317,18 +1326,18 @@ const fetchedId = response.data?.profile?.b2cProfileId || response.data?.b2cProf
                                 </div>
 
                                 {/* Progress Bar if active */}
-                                {uploadProgress && isUploadingMedia && (
+                                {uploadProgresses[field.key] && uploadingStates[field.key] && (
                                   <div className="upload-stream-progress-card">
                                     <div className="progress-header">
                                       <span>
-                                        <span className="stream-live-dot" /> Live Uploading {uploadProgress.status || 'in progress'}...
+                                        <span className="stream-live-dot" /> Live Uploading {uploadProgresses[field.key].status || 'in progress'}...
                                       </span>
-                                      <span className="progress-pct">{uploadProgress.progress ?? 0}%</span>
+                                      <span className="progress-pct">{uploadProgresses[field.key].progress ?? 0}%</span>
                                     </div>
                                     <div className="progress-track">
                                       <div
                                         className="progress-fill"
-                                        style={{ width: `${uploadProgress.progress ?? 0}%` }}
+                                        style={{ width: `${uploadProgresses[field.key].progress ?? 0}%` }}
                                       />
                                     </div>
                                     {activeUploadId && (
@@ -1450,7 +1459,7 @@ const fetchedId = response.data?.profile?.b2cProfileId || response.data?.b2cProf
                                 <button
                                   type="button"
                                   className="media-file-btn"
-                                  disabled={isUploadingMedia}
+                                  disabled={uploadingStates.thumbnail}
                                   onClick={() => thumbnailInputRef.current?.click()}
                                 >
                                   <AddPhotoAlternateOutlined fontSize="small" />
@@ -1458,6 +1467,29 @@ const fetchedId = response.data?.profile?.b2cProfileId || response.data?.b2cProf
                                 </button>
                               </div>
                             </div>
+
+                            {/* Progress Bar if active */}
+                            {uploadProgresses.thumbnail && uploadingStates.thumbnail && (
+                              <div className="upload-stream-progress-card">
+                                <div className="progress-header">
+                                  <span>
+                                    <span className="stream-live-dot" /> Live Uploading {uploadProgresses.thumbnail.status || 'in progress'}...
+                                  </span>
+                                  <span className="progress-pct">{uploadProgresses.thumbnail.progress ?? 0}%</span>
+                                </div>
+                                <div className="progress-track">
+                                  <div
+                                    className="progress-fill"
+                                    style={{ width: `${uploadProgresses.thumbnail.progress ?? 0}%` }}
+                                  />
+                                </div>
+                                {activeUploadId && (
+                                  <div className="stream-status-pill">
+                                    Session ID: <code>{activeUploadId}</code>
+                                  </div>
+                                )}
+                              </div>
+                            )}
 
                             {/* Preview */}
                             {currentImg && (

@@ -21,6 +21,7 @@ import {
   AddBoxOutlined,
   LayersOutlined,
   KeyboardArrowDownOutlined,
+  FileDownloadOutlined,
 } from "@mui/icons-material";
 
 export default function ProductListingPage() {
@@ -429,11 +430,6 @@ export default function ProductListingPage() {
                           />{" "}
                           QC Error ({batch.rejectedCount || 0} Rejected, {batch.activeCount || 0} Passed)
                         </span>
-                        {batch.rejection_reason && (
-                          <div className="sh-qc-reason">
-                            Reason: {batch.rejection_reason}
-                          </div>
-                        )}
                       </div>
                     ) : (
                       <span className="sh-qc-pill qc-draft">
@@ -445,36 +441,52 @@ export default function ProductListingPage() {
                     )}
                   </td>
                   <td>
-                    <div className="sh-actions-cell">
-                      <button
-                        className="sh-action-btn primary"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (batch.status === "active") {
-                            router.push('/business/inventory');
-                          } else if (activeMainTab === "Bulk Uploads") {
-                            handleRowClick(batch);
-                          } else {
-                            setSelectedBatch(batch);
-                            setIsModalOpen(true);
-                          }
-                        }}
-                      >
-                        {batch.status === "active" ? (
-                          <>
-                            <VisibilityOutlined sx={{ fontSize: 16 }} /> View
-                            Catalog
-                          </>
-                        ) : batch.status === "rejected" ? (
-                          <>
-                            <VisibilityOutlined sx={{ fontSize: 16 }} /> Review
-                          </>
-                        ) : (
-                          <>
-                            <EditOutlined sx={{ fontSize: 16 }} /> Edit Catalog
-                          </>
-                        )}
-                      </button>
+                    <div className="sh-actions-cell" style={{ display: 'flex', gap: '8px' }}>
+                      {batch.status === "rejected" && batch.rejection_reason && (
+                        <button
+                          className="sh-action-btn secondary"
+                          style={{ border: '1px solid #4f46e5', color: '#4f46e5', background: 'transparent' }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const element = document.createElement("a");
+                            const file = new Blob([batch.rejection_reason], {type: 'text/plain'});
+                            element.href = URL.createObjectURL(file);
+                            element.download = `rejection_reason_${batch.batchId || batch._id || 'catalog'}.txt`;
+                            document.body.appendChild(element);
+                            element.click();
+                            document.body.removeChild(element);
+                          }}
+                        >
+                          <FileDownloadOutlined sx={{ fontSize: 16, mr: 0.5 }} /> Download Reason
+                        </button>
+                      )}
+                      {batch.status !== "rejected" && (
+                        <button
+                          className="sh-action-btn primary"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (batch.status === "active") {
+                              router.push('/business/inventory');
+                            } else if (activeMainTab === "Bulk Uploads") {
+                              handleRowClick(batch);
+                            } else {
+                              setSelectedBatch(batch);
+                              setIsModalOpen(true);
+                            }
+                          }}
+                        >
+                          {batch.status === "active" ? (
+                            <>
+                              <VisibilityOutlined sx={{ fontSize: 16, mr: 0.5 }} /> View
+                              Catalog
+                            </>
+                          ) : (
+                            <>
+                              <EditOutlined sx={{ fontSize: 16, mr: 0.5 }} /> Edit Catalog
+                            </>
+                          )}
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>

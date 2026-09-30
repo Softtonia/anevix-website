@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import apiClient from '@/api';
+import axios from 'axios';
 import { Loader2, Search, AlertCircle } from 'lucide-react';
 
 const HsnAutocompleteSelect = ({ value, onChange }) => {
@@ -51,7 +51,7 @@ const HsnAutocompleteSelect = ({ value, onChange }) => {
       setLoading(true);
       setError(null);
       try {
-        const response = await apiClient.get(`/api/hsn-codes/search?query=${encodeURIComponent(query)}`);
+        const response = await axios.get(`http://localhost:5000/api/hsn-codes/search?query=${encodeURIComponent(query)}`);
         setOptions(response.data);
         setIsOpen(true);
       } catch (err) {
@@ -103,7 +103,9 @@ const HsnAutocompleteSelect = ({ value, onChange }) => {
       {/* Dropdown Menu */}
       {isOpen && (
         <div style={styles.dropdown}>
-          {options.length === 0 && !loading && !error ? (
+          {error ? (
+            <div style={styles.noResults}>{error}</div>
+          ) : options.length === 0 && !loading ? (
             <div style={styles.noResults}>No results found.</div>
           ) : (
             options.map((option) => (

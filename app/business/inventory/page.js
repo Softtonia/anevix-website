@@ -115,9 +115,9 @@ export default function InventoryPage() {
     const variants = catalog.variants?.length > 0 ? catalog.variants : [catalog];
     variants.forEach((v, idx) => {
       const stock = v.inventory?.stockQuantity ?? v.inventory?.quantity ?? v.quantity ?? v.stock ?? v.stock_quantity ?? 0;
-      let status = 'instock';
-      let statusText = 'In Stock';
-      if (stock === 0) {
+      let status = catalog.status === 'rejected' ? 'rejected' : 'instock';
+      let statusText = catalog.status === 'rejected' ? 'Rejected' : 'In Stock';
+      if (catalog.status === 'rejected') {} else if (stock === 0) {
         status = 'outstock';
         statusText = 'Out of Stock';
       } else if (stock < (v.lowStockThreshold || 5)) {
